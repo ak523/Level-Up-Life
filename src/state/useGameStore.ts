@@ -43,7 +43,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const today = now.toISOString().split('T')[0]
 
     let finalXP = calculateFinalXP(activityInput, meta)
-    const isCritical = rollForCriticalSuccess()
+    const isBadHabit = activityInput.domain === 'bad_habit'
+    const isCritical = isBadHabit ? false : rollForCriticalSuccess()
     if (isCritical) finalXP = finalXP * 2
 
     const activity: Activity = {
@@ -60,36 +61,40 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
     const newAttrs = { ...meta.attributes }
     for (const [key, val] of Object.entries(attrDeltas)) {
-      newAttrs[key as keyof typeof newAttrs] += val ?? 0
+      newAttrs[key as keyof typeof newAttrs] = Math.max(0, newAttrs[key as keyof typeof newAttrs] + (val ?? 0))
     }
-    newAttrs.GOLD += goldBonus
+    newAttrs.GOLD = Math.max(0, newAttrs.GOLD + goldBonus)
 
     let streakDays = meta.streakDays
-    const lastDate = meta.lastActivityDate
-    if (lastDate === null) {
-      streakDays = 1
-    } else {
-      const last = new Date(lastDate)
-      const diff = Math.floor((now.getTime() - last.getTime()) / MS_PER_DAY)
-      if (diff === 0) {
-        // Same day, streak unchanged
-      } else if (diff === 1) {
-        streakDays += 1
-      } else {
+    let recentOutcomes = meta.recentOutcomes
+    let newExpectedDifficulty = meta.expectedDifficulty
+
+    if (!isBadHabit) {
+      const lastDate = meta.lastActivityDate
+      if (lastDate === null) {
         streakDays = 1
+      } else {
+        const last = new Date(lastDate)
+        const diff = Math.floor((now.getTime() - last.getTime()) / MS_PER_DAY)
+        if (diff === 0) {
+          // Same day, streak unchanged
+        } else if (diff === 1) {
+          streakDays += 1
+        } else {
+          streakDays = 1
+        }
       }
+
+      const newOutcome = {
+        date: today,
+        difficulty: activityInput.difficulty,
+        success: activityInput.outcome === 'completed',
+      }
+      recentOutcomes = [...meta.recentOutcomes, newOutcome].slice(-30)
+      newExpectedDifficulty = evaluateGoldilocksAdjustment(recentOutcomes, meta.expectedDifficulty)
     }
 
-    const newOutcome = {
-      date: today,
-      difficulty: activityInput.difficulty,
-      success: activityInput.outcome === 'completed',
-    }
-    const recentOutcomes = [...meta.recentOutcomes, newOutcome].slice(-30)
-
-    const newExpectedDifficulty = evaluateGoldilocksAdjustment(recentOutcomes, meta.expectedDifficulty)
-
-    const newTotalXP = meta.totalXP + finalXP
+    const newTotalXP = Math.max(0, meta.totalXP + finalXP)
     const newLevel = computeLevelFromXP(newTotalXP)
     const leveledUp = newLevel > meta.currentLevel
 
@@ -99,7 +104,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       currentLevel: newLevel,
       attributes: newAttrs,
       streakDays,
-      lastActivityDate: today,
+      lastActivityDate: isBadHabit ? meta.lastActivityDate : today,
       expectedDifficulty: newExpectedDifficulty,
       recentOutcomes,
       criticalSuccessCount: meta.criticalSuccessCount + (isCritical ? 1 : 0),

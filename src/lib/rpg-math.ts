@@ -7,10 +7,15 @@ export function calculateBaseXP(durationMinutes: number, difficulty: number): nu
 
 /** Apply all multipliers in order to produce finalXP */
 export function calculateFinalXP(
-  activity: Pick<Activity, 'difficulty' | 'durationMinutes' | 'outcome' | 'isBoss'>,
+  activity: Pick<Activity, 'difficulty' | 'durationMinutes' | 'outcome' | 'isBoss' | 'domain'>,
   meta: Pick<GameMeta, 'expectedDifficulty' | 'streakDays'>
 ): number {
   const baseXP = calculateBaseXP(activity.durationMinutes, activity.difficulty)
+
+  if (activity.domain === 'bad_habit') {
+    return -Math.round(baseXP)
+  }
+
   const difficultyRatio = activity.difficulty / meta.expectedDifficulty
   const outcomeMult: Record<Activity['outcome'], number> = {
     completed: 1.0,
@@ -48,6 +53,10 @@ export function calculateAttributeDeltas(
         CHA: Math.ceil(base / 4),
         VIT: Math.ceil(base / 4),
       }
+    case 'bad_habit': {
+      const penalty = Math.max(1, Math.round(Math.abs(xpGained) / 20))
+      return { VIT: -penalty, WIS: -Math.ceil(penalty / 2) }
+    }
     default:
       return {}
   }
