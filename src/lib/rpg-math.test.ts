@@ -8,6 +8,7 @@ import {
   rollForCriticalSuccess,
   computeLevelFromXP,
   computeXPProgress,
+  randomGoldInterval,
 } from './rpg-math'
 
 describe('calculateBaseXP', () => {
@@ -216,5 +217,21 @@ describe('computeXPProgress', () => {
   it('clamps percentage to 100', () => {
     const { percentage } = computeXPProgress(500, 1)
     expect(percentage).toBe(100)
+  })
+})
+
+describe('randomGoldInterval', () => {
+  it('returns an integer between 300 and 400 inclusive', () => {
+    for (let i = 0; i < 200; i++) {
+      const interval = randomGoldInterval()
+      expect(Number.isInteger(interval)).toBe(true)
+      expect(interval).toBeGreaterThanOrEqual(300)
+      expect(interval).toBeLessThanOrEqual(400)
+    }
+  })
+
+  it('produces varying values over many calls', () => {
+    const values = new Set(Array.from({ length: 500 }, () => randomGoldInterval()))
+    expect(values.size).toBeGreaterThan(1)
   })
 })

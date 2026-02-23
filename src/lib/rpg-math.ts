@@ -94,6 +94,11 @@ export function computeLevelFromXP(totalXP: number): number {
   return level
 }
 
+/** Random XP interval for gold milestone (300–400 inclusive) */
+export function randomGoldInterval(): number {
+  return 300 + Math.floor(Math.random() * 101)
+}
+
 /** XP progress within current level */
 export function computeXPProgress(
   totalXP: number,
