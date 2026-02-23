@@ -1,5 +1,6 @@
 import Dexie, { type Table } from 'dexie'
 import type { Activity, GameMeta, ScheduledTask } from '../types'
+import { randomGoldInterval } from '../lib/rpg-math'
 
 const DEFAULT_GAME_META: GameMeta = {
   currentLevel: 1,
@@ -11,6 +12,7 @@ const DEFAULT_GAME_META: GameMeta = {
   expectedDifficulty: 2,
   recentOutcomes: [],
   criticalSuccessCount: 0,
+  nextGoldMilestone: randomGoldInterval(),
 }
 
 export class LevelUpLifeDB extends Dexie {

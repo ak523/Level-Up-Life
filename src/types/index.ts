@@ -44,6 +44,7 @@ export interface GameMeta {
     success: boolean
   }>
   criticalSuccessCount: number
+  nextGoldMilestone: number
 }
 
 export interface FeedbackResult {

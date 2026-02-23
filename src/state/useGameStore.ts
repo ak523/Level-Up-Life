@@ -16,6 +16,7 @@ import {
   evaluateGoldilocksAdjustment,
   rollForCriticalSuccess,
   computeLevelFromXP,
+  randomGoldInterval,
 } from '../lib/rpg-math'
 
 interface GameStore {
@@ -34,6 +35,7 @@ interface GameStore {
 }
 
 const MS_PER_DAY = 1000 * 60 * 60 * 24
+const MILESTONE_GOLD_REWARD = 10
 
 export const useGameStore = create<GameStore>((set, get) => ({
   meta: null,
@@ -117,6 +119,15 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const newLevel = computeLevelFromXP(newTotalXP)
     const leveledUp = newLevel > meta.currentLevel
 
+    // Gold milestone: award GOLD each time totalXP crosses a milestone threshold
+    let milestoneGold = 0
+    let nextGoldMilestone = meta.nextGoldMilestone ?? (meta.totalXP + randomGoldInterval())
+    while (newTotalXP >= nextGoldMilestone) {
+      milestoneGold += MILESTONE_GOLD_REWARD
+      nextGoldMilestone += randomGoldInterval()
+    }
+    newAttrs.GOLD = Math.max(0, newAttrs.GOLD + milestoneGold)
+
     const newMeta: GameMeta = {
       ...meta,
       totalXP: newTotalXP,
@@ -127,6 +138,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       expectedDifficulty: newExpectedDifficulty,
       recentOutcomes,
       criticalSuccessCount: meta.criticalSuccessCount + (isCritical ? 1 : 0),
+      nextGoldMilestone,
     }
 
     await updateGameMeta(newMeta)
@@ -135,7 +147,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const result: FeedbackResult = {
       finalXP,
       baseXP,
-      attributeDeltas: { ...attrDeltas, GOLD: (attrDeltas.GOLD ?? 0) + goldBonus },
+      attributeDeltas: { ...attrDeltas, GOLD: (attrDeltas.GOLD ?? 0) + goldBonus + milestoneGold },
       isCritical,
       leveledUp,
       newLevel,
