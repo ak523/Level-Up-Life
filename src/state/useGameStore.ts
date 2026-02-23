@@ -165,9 +165,10 @@ export const useGameStore = create<GameStore>((set, get) => ({
   },
 
   addScheduledTask: async (task) => {
+    const today = new Date().toISOString().split('T')[0]
     await addScheduledTask({
       ...task,
-      status: task.startDate <= new Date().toISOString().split('T')[0] ? 'active' : 'upcoming',
+      status: task.startDate <= today ? 'active' : 'upcoming',
       createdAt: new Date().toISOString(),
     })
     const scheduledTasks = await getScheduledTasks()

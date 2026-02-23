@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useGameStore } from '../state/useGameStore'
-import type { Activity } from '../types'
+import type { Activity, ScheduledTask } from '../types'
 
 const DOMAINS: Array<{ value: Activity['domain']; label: string; icon: string }> = [
   { value: 'learning', label: 'Learning', icon: '📚' },
@@ -177,7 +177,7 @@ function TaskRow({
   onComplete,
   onRemove,
 }: {
-  task: { id?: number; questName: string; domain: string; startDate: string; expectedCompletionDate: string; status: string }
+  task: ScheduledTask
   onComplete: () => void
   onRemove: () => void
 }) {

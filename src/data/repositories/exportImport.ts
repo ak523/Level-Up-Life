@@ -2,7 +2,7 @@ import { db } from '../db'
 import type { Activity, GameMeta, ScheduledTask } from '../../types'
 
 interface ExportData {
-  version: 1
+  version: 1 | 2
   exportedAt: string
   gameMeta: GameMeta
   activities: Activity[]
@@ -17,7 +17,7 @@ export async function exportData(): Promise<string> {
   ])
   const gameMeta = metaRows[0] ?? null
   const payload: ExportData = {
-    version: 1,
+    version: 2,
     exportedAt: new Date().toISOString(),
     gameMeta: gameMeta as GameMeta,
     activities,
@@ -28,7 +28,7 @@ export async function exportData(): Promise<string> {
 
 export async function importData(json: string): Promise<void> {
   const data: ExportData = JSON.parse(json)
-  if (data.version !== 1) throw new Error('Unsupported export version')
+  if (data.version !== 1 && data.version !== 2) throw new Error('Unsupported export version')
   if (!data.gameMeta || !Array.isArray(data.activities)) {
     throw new Error('Invalid export format')
   }
