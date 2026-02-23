@@ -108,8 +108,8 @@ export function Dashboard() {
                   <div className="font-medium text-slate-200 truncate">{a.questName}</div>
                   <div className="text-xs text-slate-500">
                     {a.date} · {a.durationMinutes}m
-                    {a.mood != null && <span title="Mood"> · {MOOD_ICONS[a.mood - 1]}</span>}
-                    {a.energyLevel != null && <span title="Energy"> · {ENERGY_ICONS[a.energyLevel - 1]}</span>}
+                    {a.mood != null && <span title={`Mood: ${a.mood}/5`}> · {MOOD_ICONS[a.mood - 1]}</span>}
+                    {a.energyLevel != null && <span title={`Energy: ${a.energyLevel}/5`}> · {ENERGY_ICONS[a.energyLevel - 1]}</span>}
                   </div>
                 </div>
                 <div className="text-right">
