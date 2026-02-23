@@ -9,7 +9,7 @@ A **gamified life-analytics PWA** that turns your daily habits into XP, levels, 
 ### 🎯 Activity Logging
 - Log activities with a **quest name**, **domain**, **difficulty** (1–5), **duration**, and **outcome** (completed / partial / failed)
 - Mark high-stakes tasks as **Boss Quests** for 3× XP
-- Optional **mood** (1–5) and **energy level** (1–5) tracking per activity
+- Optional **mood** (1–5), **energy level** (1–5), and **anxiety level** (1–5) tracking per activity
 - Quick-select suggestions for fast entry
 - Real-time **XP preview** before submission
 
@@ -17,17 +17,29 @@ A **gamified life-analytics PWA** that turns your daily habits into XP, levels, 
 - **Hero stats panel** showing current level, total XP, and progress to next level
 - **Attribute bars** for all five character stats (INT, WIS, CHA, VIT, GOLD)
 - **Activity history** with recent logs
-- **Mood & energy trends** visualization
+- **Mood, energy & anxiety trends** visualization
 - **Streak badge** displaying your current consecutive-day streak 🔥
+
+### 📅 Task Scheduling
+- **Schedule upcoming tasks** with a name, domain, start date, and expected completion date
+- Tasks automatically **promote from upcoming to active** when their start date arrives
+- Completing an activity **auto-archives** matching scheduled tasks
+- Manually mark tasks as complete or remove them
+
+### 📊 Activity Heatmap
+- **Monthly calendar view** showing daily XP as color-coded intensity tiles
+- Navigate between months with **previous/next controls**
+- **Hover tooltips** display the exact XP earned on each day
+- **Color legend** from less to more activity
 
 ### 🛒 In-Game Shop
 - Purchase **Streak Freezes** (50 GOLD each) to protect your streak when you miss a day
 
 ### ⚙️ Settings & Accessibility
-- Toggle **sound effects** (Web Audio API sine-wave tones for click, XP gain, purchase, streak saved)
+- Toggle **sound effects** (Web Audio API sine-wave tones for click, XP gain, purchase, streak saved, sad/fail)
 - Toggle **reduced motion** to disable animations
 - **Haptic feedback** via the Vibration API (short, success, and critical vibration patterns)
-- Full **data export/import** as version-tagged JSON for backup and restore
+- Full **data export/import** as version-tagged JSON (v2) for backup and restore, including scheduled tasks
 
 ### 🎊 Feedback & Celebrations
 - Post-submission **feedback modal** showing XP earned, base XP breakdown, attribute changes, and critical-hit notifications
@@ -61,7 +73,7 @@ A **gamified life-analytics PWA** that turns your daily habits into XP, levels, 
 
 ### Additional Tracking
 - **Streak days** — consecutive days with at least one logged activity
-- **Mood & energy** — optional per-activity wellbeing snapshots (1–5 scale)
+- **Mood, energy & anxiety** — optional per-activity wellbeing snapshots (1–5 scale)
 - **Critical success count** — lifetime total of critical hits rolled
 - **Recent outcomes** — last 30 activity outcomes for adaptive difficulty
 
@@ -161,7 +173,7 @@ src/
 ├── components/    # React + Tailwind UI components
 ├── data/
 │   ├── db.ts              # IndexedDB schema (Dexie)
-│   └── repositories/      # Data access layer (CRUD operations, export/import)
+│   └── repositories/      # Data access layer (CRUD operations, export/import, scheduling)
 ├── lib/
 │   ├── rpg-math.ts        # Pure RPG game logic (XP, levels, attributes, Goldilocks)
 │   ├── soundEngine.ts     # Web Audio sound effects
