@@ -23,7 +23,7 @@ describe('calculateFinalXP', () => {
 
   it('completed with no streak yields correct XP', () => {
     const xp = calculateFinalXP(
-      { difficulty: 2, durationMinutes: 30, outcome: 'completed', isBoss: false },
+      { difficulty: 2, durationMinutes: 30, outcome: 'completed', isBoss: false, domain: 'learning' },
       baseMeta
     )
     expect(xp).toBe(60)
@@ -31,7 +31,7 @@ describe('calculateFinalXP', () => {
 
   it('partial yields 50% XP', () => {
     const xp = calculateFinalXP(
-      { difficulty: 2, durationMinutes: 30, outcome: 'partial', isBoss: false },
+      { difficulty: 2, durationMinutes: 30, outcome: 'partial', isBoss: false, domain: 'learning' },
       baseMeta
     )
     expect(xp).toBe(30)
@@ -39,7 +39,7 @@ describe('calculateFinalXP', () => {
 
   it('failed yields 0 XP minus 5 penalty (max 0)', () => {
     const xp = calculateFinalXP(
-      { difficulty: 2, durationMinutes: 30, outcome: 'failed', isBoss: false },
+      { difficulty: 2, durationMinutes: 30, outcome: 'failed', isBoss: false, domain: 'learning' },
       baseMeta
     )
     expect(xp).toBe(0)
@@ -47,7 +47,7 @@ describe('calculateFinalXP', () => {
 
   it('boss quest triples XP', () => {
     const xp = calculateFinalXP(
-      { difficulty: 2, durationMinutes: 30, outcome: 'completed', isBoss: true },
+      { difficulty: 2, durationMinutes: 30, outcome: 'completed', isBoss: true, domain: 'learning' },
       baseMeta
     )
     expect(xp).toBe(180)
@@ -55,7 +55,7 @@ describe('calculateFinalXP', () => {
 
   it('streak adds bonus', () => {
     const xp = calculateFinalXP(
-      { difficulty: 2, durationMinutes: 30, outcome: 'completed', isBoss: false },
+      { difficulty: 2, durationMinutes: 30, outcome: 'completed', isBoss: false, domain: 'learning' },
       { expectedDifficulty: 2, streakDays: 10 }
     )
     expect(xp).toBe(90)
@@ -63,10 +63,26 @@ describe('calculateFinalXP', () => {
 
   it('streak bonus caps at 50%', () => {
     const xp = calculateFinalXP(
-      { difficulty: 2, durationMinutes: 30, outcome: 'completed', isBoss: false },
+      { difficulty: 2, durationMinutes: 30, outcome: 'completed', isBoss: false, domain: 'learning' },
       { expectedDifficulty: 2, streakDays: 100 }
     )
     expect(xp).toBe(90)
+  })
+
+  it('bad_habit returns negative XP equal to baseXP', () => {
+    const xp = calculateFinalXP(
+      { difficulty: 3, durationMinutes: 20, outcome: 'completed', isBoss: false, domain: 'bad_habit' },
+      baseMeta
+    )
+    expect(xp).toBe(-60)
+  })
+
+  it('bad_habit ignores outcome, streak, and boss multipliers', () => {
+    const xp = calculateFinalXP(
+      { difficulty: 2, durationMinutes: 30, outcome: 'completed', isBoss: true, domain: 'bad_habit' },
+      { expectedDifficulty: 2, streakDays: 10 }
+    )
+    expect(xp).toBe(-60)
   })
 })
 
@@ -90,6 +106,12 @@ describe('calculateAttributeDeltas', () => {
     expect(deltas.WIS).toBeGreaterThan(0)
     expect(deltas.CHA).toBeGreaterThan(0)
     expect(deltas.VIT).toBeGreaterThan(0)
+  })
+
+  it('bad_habit gives negative VIT and WIS', () => {
+    const deltas = calculateAttributeDeltas('bad_habit', -60)
+    expect(deltas.VIT).toBeLessThan(0)
+    expect(deltas.WIS).toBeLessThan(0)
   })
 })
 

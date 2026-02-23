@@ -1,7 +1,7 @@
 export interface Activity {
   id?: number
   questName: string
-  domain: 'learning' | 'wellbeing' | 'finance' | 'social' | 'misc'
+  domain: 'learning' | 'wellbeing' | 'finance' | 'social' | 'misc' | 'bad_habit'
   difficulty: 1 | 2 | 3 | 4 | 5
   durationMinutes: number
   outcome: 'completed' | 'partial' | 'failed'
@@ -9,6 +9,8 @@ export interface Activity {
   date: string
   timestamp: string
   finalXP: number
+  mood?: 1 | 2 | 3 | 4 | 5
+  energyLevel?: 1 | 2 | 3 | 4 | 5
 }
 
 export interface GameMeta {

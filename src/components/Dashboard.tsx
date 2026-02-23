@@ -19,7 +19,11 @@ const DOMAIN_ICONS: Record<string, string> = {
   finance: '💰',
   social: '🤝',
   misc: '⭐',
+  bad_habit: '💀',
 }
+
+const MOOD_ICONS = ['😞', '😕', '😐', '🙂', '😄']
+const ENERGY_ICONS = ['🪫', '😴', '⚡', '🔥', '🚀']
 
 export function Dashboard() {
   const { meta, recentActivities } = useGameStore()
@@ -102,10 +106,16 @@ export function Dashboard() {
                 <span className="text-lg">{DOMAIN_ICONS[a.domain]}</span>
                 <div className="flex-1 min-w-0">
                   <div className="font-medium text-slate-200 truncate">{a.questName}</div>
-                  <div className="text-xs text-slate-500">{a.date} · {a.durationMinutes}m</div>
+                  <div className="text-xs text-slate-500">
+                    {a.date} · {a.durationMinutes}m
+                    {a.mood != null && <span title="Mood"> · {MOOD_ICONS[a.mood - 1]}</span>}
+                    {a.energyLevel != null && <span title="Energy"> · {ENERGY_ICONS[a.energyLevel - 1]}</span>}
+                  </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-brand-xp font-bold">+{a.finalXP}</div>
+                  <div className={`font-bold ${a.finalXP < 0 ? 'text-red-400' : 'text-brand-xp'}`}>
+                    {a.finalXP < 0 ? '' : '+'}{a.finalXP}
+                  </div>
                   <div className="text-xs text-slate-500">{a.outcome}</div>
                 </div>
               </div>

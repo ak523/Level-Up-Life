@@ -12,6 +12,7 @@ const DOMAINS: Array<{ value: Activity['domain']; label: string; icon: string; c
   { value: 'finance', label: 'Finance', icon: '💰', color: 'from-yellow-600 to-yellow-800' },
   { value: 'social', label: 'Social', icon: '🤝', color: 'from-purple-600 to-purple-800' },
   { value: 'misc', label: 'Misc', icon: '⭐', color: 'from-slate-600 to-slate-800' },
+  { value: 'bad_habit', label: 'Bad Habit', icon: '💀', color: 'from-red-700 to-red-900' },
 ]
 
 const OUTCOMES: Array<{ value: Activity['outcome']; label: string; color: string }> = [
@@ -24,6 +25,9 @@ const RECENT_QUESTS = [
   'Morning workout', 'Read a book chapter', 'Meditate', 'Budget review',
   'Language practice', 'Code project', 'Cook healthy meal', 'Walk 10k steps',
 ]
+
+const MOOD_LABELS = ['😞', '😕', '😐', '🙂', '😄']
+const ENERGY_LABELS = ['🪫', '😴', '⚡', '🔥', '🚀']
 
 export function ActivityForm() {
   const { meta, submitActivity } = useGameStore()
@@ -38,6 +42,8 @@ export function ActivityForm() {
     durationMinutes: 30,
     outcome: 'completed' as Activity['outcome'],
     isBoss: false,
+    mood: 3 as NonNullable<Activity['mood']>,
+    energyLevel: 3 as NonNullable<Activity['energyLevel']>,
   })
 
   const previewXP = useMemo(() => {
@@ -72,6 +78,8 @@ export function ActivityForm() {
         durationMinutes: 30,
         outcome: 'completed',
         isBoss: false,
+        mood: 3,
+        energyLevel: 3,
       })
     } finally {
       setSubmitting(false)
@@ -228,11 +236,55 @@ export function ActivityForm() {
           </button>
         </div>
 
+        {/* Mood & Energy */}
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-slate-300 mb-2">
+              Mood: <span className="text-brand-accent font-bold">{MOOD_LABELS[form.mood - 1]}</span>
+            </label>
+            <div className="flex gap-1">
+              {MOOD_LABELS.map((label, i) => (
+                <button
+                  key={label}
+                  type="button"
+                  onClick={() => setForm({ ...form, mood: (i + 1) as NonNullable<Activity['mood']> })}
+                  className={`flex-1 py-1.5 rounded-lg text-center text-lg transition-all duration-200 ${
+                    form.mood === i + 1 ? 'bg-brand-accent/30 scale-110 border border-brand-accent' : 'bg-brand-bg border border-brand-card opacity-60 hover:opacity-80'
+                  }`}
+                  title={label}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-300 mb-2">
+              Energy: <span className="text-brand-xp font-bold">{ENERGY_LABELS[form.energyLevel - 1]}</span>
+            </label>
+            <div className="flex gap-1">
+              {ENERGY_LABELS.map((label, i) => (
+                <button
+                  key={label}
+                  type="button"
+                  onClick={() => setForm({ ...form, energyLevel: (i + 1) as NonNullable<Activity['energyLevel']> })}
+                  className={`flex-1 py-1.5 rounded-lg text-center text-lg transition-all duration-200 ${
+                    form.energyLevel === i + 1 ? 'bg-brand-xp/30 scale-110 border border-brand-xp' : 'bg-brand-bg border border-brand-card opacity-60 hover:opacity-80'
+                  }`}
+                  title={label}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
         {/* XP Preview */}
-        <div className="bg-brand-bg rounded-xl px-4 py-3 border border-brand-xp/30 flex items-center justify-between">
+        <div className={`bg-brand-bg rounded-xl px-4 py-3 border ${previewXP < 0 ? 'border-red-500/30' : 'border-brand-xp/30'} flex items-center justify-between`}>
           <span className="text-sm text-slate-400">Estimated XP</span>
-          <span className={`text-2xl font-bold text-brand-xp ${!reducedMotion ? 'animate-xp-pop' : ''}`} key={previewXP}>
-            +{previewXP}
+          <span className={`text-2xl font-bold ${previewXP < 0 ? 'text-red-400' : 'text-brand-xp'} ${!reducedMotion ? 'animate-xp-pop' : ''}`} key={previewXP}>
+            {previewXP < 0 ? '' : '+'}{previewXP}
           </span>
         </div>
 
