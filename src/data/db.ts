@@ -1,5 +1,5 @@
 import Dexie, { type Table } from 'dexie'
-import type { Activity, GameMeta } from '../types'
+import type { Activity, GameMeta, ScheduledTask } from '../types'
 
 const DEFAULT_GAME_META: GameMeta = {
   currentLevel: 1,
@@ -16,12 +16,18 @@ const DEFAULT_GAME_META: GameMeta = {
 export class LevelUpLifeDB extends Dexie {
   activities!: Table<Activity, number>
   gameMeta!: Table<GameMeta & { id: number }, number>
+  scheduledTasks!: Table<ScheduledTask, number>
 
   constructor() {
     super('LevelUpLifeDB')
     this.version(1).stores({
       activities: '++id, domain, date, timestamp',
       gameMeta: 'id',
+    })
+    this.version(2).stores({
+      activities: '++id, domain, date, timestamp',
+      gameMeta: 'id',
+      scheduledTasks: '++id, questName, status, startDate, expectedCompletionDate',
     })
   }
 }

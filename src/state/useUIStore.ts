@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import type { FeedbackResult } from '../types'
 
 interface UIStore {
-  activeTab: 'form' | 'dashboard' | 'shop' | 'settings'
+  activeTab: 'form' | 'dashboard' | 'shop' | 'settings' | 'schedule' | 'heatmap'
   showFeedbackModal: boolean
   feedbackResult: FeedbackResult | null
   soundEnabled: boolean

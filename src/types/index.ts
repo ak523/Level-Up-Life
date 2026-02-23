@@ -11,6 +11,17 @@ export interface Activity {
   finalXP: number
   mood?: 1 | 2 | 3 | 4 | 5
   energyLevel?: 1 | 2 | 3 | 4 | 5
+  anxietyLevel?: 1 | 2 | 3 | 4 | 5
+}
+
+export interface ScheduledTask {
+  id?: number
+  questName: string
+  domain: Activity['domain']
+  startDate: string
+  expectedCompletionDate: string
+  status: 'upcoming' | 'active' | 'completed' | 'archived'
+  createdAt: string
 }
 
 export interface GameMeta {
