@@ -1,0 +1,142 @@
+import { create } from 'zustand'
+import type { GameMeta, Activity, FeedbackResult } from '../types'
+import { getGameMeta, updateGameMeta } from '../data/repositories/gameMetaRepo'
+import { getRecentActivities, addActivity } from '../data/repositories/activityRepo'
+import {
+  calculateFinalXP,
+  calculateAttributeDeltas,
+  evaluateGoldilocksAdjustment,
+  rollForCriticalSuccess,
+  computeLevelFromXP,
+} from '../lib/rpg-math'
+
+interface GameStore {
+  meta: GameMeta | null
+  recentActivities: Activity[]
+  loading: boolean
+  loadData: () => Promise<void>
+  submitActivity: (
+    activity: Omit<Activity, 'finalXP' | 'date' | 'timestamp'>
+  ) => Promise<FeedbackResult>
+  buyStreakFreeze: () => Promise<boolean>
+}
+
+const MS_PER_DAY = 1000 * 60 * 60 * 24
+
+export const useGameStore = create<GameStore>((set, get) => ({
+  meta: null,
+  recentActivities: [],
+  loading: false,
+
+  loadData: async () => {
+    set({ loading: true })
+    const [meta, recentActivities] = await Promise.all([
+      getGameMeta(),
+      getRecentActivities(),
+    ])
+    set({ meta, recentActivities, loading: false })
+  },
+
+  submitActivity: async (activityInput) => {
+    const meta = get().meta!
+    const now = new Date()
+    const today = now.toISOString().split('T')[0]
+
+    let finalXP = calculateFinalXP(activityInput, meta)
+    const isCritical = rollForCriticalSuccess()
+    if (isCritical) finalXP = finalXP * 2
+
+    const activity: Activity = {
+      ...activityInput,
+      date: today,
+      timestamp: now.toISOString(),
+      finalXP,
+    }
+
+    await addActivity(activity)
+
+    const attrDeltas = calculateAttributeDeltas(activityInput.domain, finalXP)
+    const goldBonus = isCritical ? 15 : 0
+
+    const newAttrs = { ...meta.attributes }
+    for (const [key, val] of Object.entries(attrDeltas)) {
+      newAttrs[key as keyof typeof newAttrs] += val ?? 0
+    }
+    newAttrs.GOLD += goldBonus
+
+    let streakDays = meta.streakDays
+    const lastDate = meta.lastActivityDate
+    if (lastDate === null) {
+      streakDays = 1
+    } else {
+      const last = new Date(lastDate)
+      const diff = Math.floor((now.getTime() - last.getTime()) / MS_PER_DAY)
+      if (diff === 0) {
+        // Same day, streak unchanged
+      } else if (diff === 1) {
+        streakDays += 1
+      } else {
+        streakDays = 1
+      }
+    }
+
+    const newOutcome = {
+      date: today,
+      difficulty: activityInput.difficulty,
+      success: activityInput.outcome === 'completed',
+    }
+    const recentOutcomes = [...meta.recentOutcomes, newOutcome].slice(-30)
+
+    const newExpectedDifficulty = evaluateGoldilocksAdjustment(recentOutcomes, meta.expectedDifficulty)
+
+    const newTotalXP = meta.totalXP + finalXP
+    const newLevel = computeLevelFromXP(newTotalXP)
+    const leveledUp = newLevel > meta.currentLevel
+
+    const newMeta: GameMeta = {
+      ...meta,
+      totalXP: newTotalXP,
+      currentLevel: newLevel,
+      attributes: newAttrs,
+      streakDays,
+      lastActivityDate: today,
+      expectedDifficulty: newExpectedDifficulty,
+      recentOutcomes,
+      criticalSuccessCount: meta.criticalSuccessCount + (isCritical ? 1 : 0),
+    }
+
+    await updateGameMeta(newMeta)
+
+    const baseXP = activityInput.durationMinutes * activityInput.difficulty
+    const result: FeedbackResult = {
+      finalXP,
+      baseXP,
+      attributeDeltas: { ...attrDeltas, GOLD: (attrDeltas.GOLD ?? 0) + goldBonus },
+      isCritical,
+      leveledUp,
+      newLevel,
+      goldilocksAdjustment: newExpectedDifficulty,
+    }
+
+    set({ meta: newMeta })
+    await get().loadData()
+
+    return result
+  },
+
+  buyStreakFreeze: async () => {
+    const meta = get().meta!
+    const FREEZE_COST = 50
+    if (meta.attributes.GOLD < FREEZE_COST) return false
+
+    const newAttrs = { ...meta.attributes, GOLD: meta.attributes.GOLD - FREEZE_COST }
+    const newMeta = {
+      ...meta,
+      attributes: newAttrs,
+      streakFreezeCount: meta.streakFreezeCount + 1,
+    }
+    await updateGameMeta(newMeta)
+    set({ meta: newMeta })
+    return true
+  },
+}))

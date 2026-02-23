@@ -1,0 +1,48 @@
+{
+  "name": "level-up-life",
+  "version": "1.0.0",
+  "description": "A gamified life‑analytics system that turns daily habits into XP, levels, and RPG‑style stats. It tracks learning, finance, well‑being, and social actions, applies difficulty and priority weighting, and visualizes progress so your real life becomes a measurable character‑growth journey.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "coverage": "vitest run --coverage"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ak523/Level-Up-Life.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/ak523/Level-Up-Life/issues"
+  },
+  "homepage": "https://github.com/ak523/Level-Up-Life#readme",
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.1.4",
+    "@vitest/coverage-v8": "^4.0.18",
+    "jsdom": "^28.1.0",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.1",
+    "vite-plugin-pwa": "^1.2.0",
+    "vitest": "^4.0.18"
+  },
+  "dependencies": {
+    "autoprefixer": "^10.4.24",
+    "dexie": "^4.3.0",
+    "postcss": "^8.5.6",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "tailwindcss": "^3.4.19",
+    "zustand": "^5.0.11"
+  }
+}
