@@ -2,8 +2,10 @@ import { useUIStore } from '../state/useUIStore'
 import { useGameStore } from '../state/useGameStore'
 
 const TABS = [
-  { id: 'dashboard', label: 'Dashboard', icon: '🏠' },
+  { id: 'dashboard', label: 'Home', icon: '🏠' },
   { id: 'form', label: 'Quest', icon: '⚔️' },
+  { id: 'schedule', label: 'Schedule', icon: '📅' },
+  { id: 'heatmap', label: 'Heatmap', icon: '📊' },
   { id: 'shop', label: 'Shop', icon: '🏪' },
   { id: 'settings', label: 'Settings', icon: '⚙️' },
 ] as const

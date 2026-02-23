@@ -63,3 +63,9 @@ export function playStreakSaved(): void {
   playTone(440, 0.15, 'sine', 0.2)
   setTimeout(() => playTone(880, 0.3, 'sine', 0.2), 150)
 }
+
+/** Short descending tone for negative reinforcement (task fail, XP loss, zero XP). */
+export function playSadSound(): void {
+  playTone(330, 0.25, 'sine', 0.15)
+  setTimeout(() => playTone(262, 0.35, 'sine', 0.12), 250)
+}

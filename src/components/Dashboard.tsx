@@ -24,6 +24,7 @@ const DOMAIN_ICONS: Record<string, string> = {
 
 const MOOD_ICONS = ['😞', '😕', '😐', '🙂', '😄']
 const ENERGY_ICONS = ['🪫', '😴', '⚡', '🔥', '🚀']
+const ANXIETY_ICONS = ['😌', '😊', '😐', '😰', '😱']
 
 export function Dashboard() {
   const { meta, recentActivities } = useGameStore()
@@ -110,6 +111,7 @@ export function Dashboard() {
                     {a.date} · {a.durationMinutes}m
                     {a.mood != null && <span title={`Mood: ${a.mood}/5`}> · {MOOD_ICONS[a.mood - 1]}</span>}
                     {a.energyLevel != null && <span title={`Energy: ${a.energyLevel}/5`}> · {ENERGY_ICONS[a.energyLevel - 1]}</span>}
+                    {a.anxietyLevel != null && <span title={`Anxiety: ${a.anxietyLevel}/5`}> · {ANXIETY_ICONS[a.anxietyLevel - 1]}</span>}
                   </div>
                 </div>
                 <div className="text-right">

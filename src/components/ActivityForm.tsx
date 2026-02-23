@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react'
 import { useGameStore } from '../state/useGameStore'
 import { useUIStore } from '../state/useUIStore'
 import { calculateFinalXP } from '../lib/rpg-math'
-import { playClick, playXPGain } from '../lib/soundEngine'
+import { playClick, playXPGain, playSadSound } from '../lib/soundEngine'
 import { vibrateShort } from '../lib/haptics'
 import type { Activity } from '../types'
 
@@ -28,6 +28,7 @@ const RECENT_QUESTS = [
 
 const MOOD_LABELS = ['😞', '😕', '😐', '🙂', '😄']
 const ENERGY_LABELS = ['🪫', '😴', '⚡', '🔥', '🚀']
+const ANXIETY_LABELS = ['😌', '😊', '😐', '😰', '😱']
 
 export function ActivityForm() {
   const { meta, submitActivity } = useGameStore()
@@ -44,6 +45,7 @@ export function ActivityForm() {
     isBoss: false,
     mood: 3 as NonNullable<Activity['mood']>,
     energyLevel: 3 as NonNullable<Activity['energyLevel']>,
+    anxietyLevel: 3 as NonNullable<Activity['anxietyLevel']>,
   })
 
   const previewXP = useMemo(() => {
@@ -69,7 +71,13 @@ export function ActivityForm() {
       if (soundEnabled) playClick()
       vibrateShort()
       const result = await submitActivity(form)
-      if (soundEnabled) playXPGain()
+      if (soundEnabled) {
+        if (result.finalXP <= 0 || form.outcome === 'failed') {
+          playSadSound()
+        } else {
+          playXPGain()
+        }
+      }
       openFeedbackModal(result)
       setForm({
         questName: '',
@@ -80,6 +88,7 @@ export function ActivityForm() {
         isBoss: false,
         mood: 3,
         energyLevel: 3,
+        anxietyLevel: 3,
       })
     } finally {
       setSubmitting(false)
@@ -236,8 +245,8 @@ export function ActivityForm() {
           </button>
         </div>
 
-        {/* Mood & Energy */}
-        <div className="grid grid-cols-2 gap-4">
+        {/* Mood, Energy & Anxiety */}
+        <div className="grid grid-cols-3 gap-4">
           <div>
             <label className="block text-sm font-medium text-slate-300 mb-2">
               Mood: <span className="text-brand-accent font-bold">{MOOD_LABELS[form.mood - 1]}</span>
@@ -270,6 +279,26 @@ export function ActivityForm() {
                   onClick={() => setForm({ ...form, energyLevel: (i + 1) as NonNullable<Activity['energyLevel']> })}
                   className={`flex-1 py-1.5 rounded-lg text-center text-lg transition-all duration-200 ${
                     form.energyLevel === i + 1 ? 'bg-brand-xp/30 scale-110 border border-brand-xp' : 'bg-brand-bg border border-brand-card opacity-60 hover:opacity-80'
+                  }`}
+                  title={label}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-300 mb-2">
+              Anxiety: <span className="text-purple-400 font-bold">{ANXIETY_LABELS[form.anxietyLevel - 1]}</span>
+            </label>
+            <div className="flex gap-1">
+              {ANXIETY_LABELS.map((label, i) => (
+                <button
+                  key={`anxiety-${i}`}
+                  type="button"
+                  onClick={() => setForm({ ...form, anxietyLevel: (i + 1) as NonNullable<Activity['anxietyLevel']> })}
+                  className={`flex-1 py-1.5 rounded-lg text-center text-lg transition-all duration-200 ${
+                    form.anxietyLevel === i + 1 ? 'bg-purple-500/30 scale-110 border border-purple-500' : 'bg-brand-bg border border-brand-card opacity-60 hover:opacity-80'
                   }`}
                   title={label}
                 >

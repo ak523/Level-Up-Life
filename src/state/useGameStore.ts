@@ -1,7 +1,15 @@
 import { create } from 'zustand'
-import type { GameMeta, Activity, FeedbackResult } from '../types'
+import type { GameMeta, Activity, FeedbackResult, ScheduledTask } from '../types'
 import { getGameMeta, updateGameMeta } from '../data/repositories/gameMetaRepo'
 import { getRecentActivities, addActivity } from '../data/repositories/activityRepo'
+import {
+  getScheduledTasks,
+  addScheduledTask,
+  updateScheduledTaskStatus,
+  deleteScheduledTask,
+  syncOnCompletion,
+  promoteUpcomingTasks,
+} from '../data/repositories/scheduledTaskRepo'
 import {
   calculateFinalXP,
   calculateAttributeDeltas,
@@ -13,12 +21,16 @@ import {
 interface GameStore {
   meta: GameMeta | null
   recentActivities: Activity[]
+  scheduledTasks: ScheduledTask[]
   loading: boolean
   loadData: () => Promise<void>
   submitActivity: (
     activity: Omit<Activity, 'finalXP' | 'date' | 'timestamp'>
   ) => Promise<FeedbackResult>
   buyStreakFreeze: () => Promise<boolean>
+  addScheduledTask: (task: Omit<ScheduledTask, 'id' | 'status' | 'createdAt'>) => Promise<void>
+  completeScheduledTask: (id: number) => Promise<void>
+  removeScheduledTask: (id: number) => Promise<void>
 }
 
 const MS_PER_DAY = 1000 * 60 * 60 * 24
@@ -26,15 +38,18 @@ const MS_PER_DAY = 1000 * 60 * 60 * 24
 export const useGameStore = create<GameStore>((set, get) => ({
   meta: null,
   recentActivities: [],
+  scheduledTasks: [],
   loading: false,
 
   loadData: async () => {
     set({ loading: true })
-    const [meta, recentActivities] = await Promise.all([
+    await promoteUpcomingTasks()
+    const [meta, recentActivities, scheduledTasks] = await Promise.all([
       getGameMeta(),
       getRecentActivities(),
+      getScheduledTasks(),
     ])
-    set({ meta, recentActivities, loading: false })
+    set({ meta, recentActivities, scheduledTasks, loading: false })
   },
 
   submitActivity: async (activityInput) => {
@@ -56,6 +71,10 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
     await addActivity(activity)
 
+    // Sync: archive matching scheduled tasks when activity is completed
+    if (activityInput.outcome === 'completed') {
+      await syncOnCompletion(activityInput.questName)
+    }
     const attrDeltas = calculateAttributeDeltas(activityInput.domain, finalXP)
     const goldBonus = isCritical ? 15 : 0
 
@@ -143,5 +162,27 @@ export const useGameStore = create<GameStore>((set, get) => ({
     await updateGameMeta(newMeta)
     set({ meta: newMeta })
     return true
+  },
+
+  addScheduledTask: async (task) => {
+    await addScheduledTask({
+      ...task,
+      status: task.startDate <= new Date().toISOString().split('T')[0] ? 'active' : 'upcoming',
+      createdAt: new Date().toISOString(),
+    })
+    const scheduledTasks = await getScheduledTasks()
+    set({ scheduledTasks })
+  },
+
+  completeScheduledTask: async (id) => {
+    await updateScheduledTaskStatus(id, 'archived')
+    const scheduledTasks = await getScheduledTasks()
+    set({ scheduledTasks })
+  },
+
+  removeScheduledTask: async (id) => {
+    await deleteScheduledTask(id)
+    const scheduledTasks = await getScheduledTasks()
+    set({ scheduledTasks })
   },
 }))

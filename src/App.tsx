@@ -7,6 +7,8 @@ import { FeedbackModal } from './components/FeedbackModal'
 import { Shop } from './components/Shop'
 import { Settings } from './components/Settings'
 import { NavBar } from './components/NavBar'
+import { SchedulingLog } from './components/SchedulingLog'
+import { Heatmap } from './components/Heatmap'
 
 export default function App() {
   const { loadData } = useGameStore()
@@ -30,6 +32,8 @@ export default function App() {
       <main className="max-w-2xl mx-auto px-4 py-4 pb-24">
         {activeTab === 'dashboard' && <Dashboard />}
         {activeTab === 'form' && <ActivityForm />}
+        {activeTab === 'schedule' && <SchedulingLog />}
+        {activeTab === 'heatmap' && <Heatmap />}
         {activeTab === 'shop' && <Shop />}
         {activeTab === 'settings' && <Settings />}
       </main>
