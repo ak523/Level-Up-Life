@@ -19,11 +19,11 @@ export default function App() {
   }, [loadData])
 
   return (
-    <div className="min-h-screen bg-brand-bg text-white">
-      <header className="bg-brand-surface border-b border-brand-card px-4 py-3 flex items-center justify-center sticky top-0 z-20">
+    <div className="min-h-screen bg-neo-bg text-neo-black">
+      <header className="bg-neo-gold border-b-4 border-neo-black px-4 py-3 flex items-center justify-center sticky top-0 z-20 shadow-neo">
         <div className="flex items-center gap-3">
           <span className="text-2xl">⚔️</span>
-          <h1 className="text-xl font-bold bg-gradient-to-r from-brand-accent to-brand-xp bg-clip-text text-transparent">
+          <h1 className="text-xl font-bold uppercase tracking-wide text-neo-black">
             Level Up Life
           </h1>
         </div>

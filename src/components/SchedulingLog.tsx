@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useGameStore } from '../state/useGameStore'
 import type { Activity, ScheduledTask } from '../types'
+import { NeoCard, NeoButton } from './neo'
 
 const DOMAINS: Array<{ value: Activity['domain']; label: string; icon: string }> = [
   { value: 'learning', label: 'Learning', icon: '📚' },
@@ -43,35 +44,35 @@ export function SchedulingLog() {
   return (
     <div className="space-y-4">
       {/* Add Task Form */}
-      <div className="bg-brand-surface border border-brand-card rounded-2xl p-6">
-        <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+      <NeoCard>
+        <h2 className="text-xl font-bold uppercase mb-4 flex items-center gap-2">
           <span>📅</span> Schedule a Task
         </h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-1">Task Name</label>
+            <label className="block text-sm font-bold uppercase text-neo-black mb-1">Task Name</label>
             <input
               type="text"
               value={form.questName}
               onChange={(e) => setForm({ ...form, questName: e.target.value })}
               placeholder="What are you planning?"
-              className="w-full bg-brand-bg border border-brand-card rounded-lg px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-brand-accent transition-colors"
+              className="w-full bg-white border-4 border-neo-black rounded-md px-3 py-2 text-neo-black placeholder-neutral-400 focus:outline-none focus:shadow-neo-md focus:-translate-x-0.5 focus:-translate-y-0.5 transition-all duration-150"
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">Domain</label>
+            <label className="block text-sm font-bold uppercase text-neo-black mb-2">Domain</label>
             <div className="flex gap-2 flex-wrap">
               {DOMAINS.map((d) => (
                 <button
                   key={d.value}
                   type="button"
                   onClick={() => setForm({ ...form, domain: d.value })}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-sm font-medium transition-all duration-200 ${
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md border-4 border-neo-black text-sm font-bold uppercase transition-all duration-150 ${
                     form.domain === d.value
-                      ? 'bg-brand-accent/20 border-brand-accent text-white'
-                      : 'bg-brand-bg border-brand-card text-slate-400 hover:border-slate-500'
+                      ? 'bg-neo-xp text-neo-black shadow-neo -translate-x-0.5 -translate-y-0.5'
+                      : 'bg-white text-neutral-500 hover:shadow-neo hover:-translate-x-0.5 hover:-translate-y-0.5'
                   }`}
                 >
                   <span>{d.icon}</span>
@@ -83,42 +84,44 @@ export function SchedulingLog() {
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-1">Start Date</label>
+              <label className="block text-sm font-bold uppercase text-neo-black mb-1">Start Date</label>
               <input
                 type="date"
                 value={form.startDate}
                 onChange={(e) => setForm({ ...form, startDate: e.target.value })}
-                className="w-full bg-brand-bg border border-brand-card rounded-lg px-3 py-2 text-white focus:outline-none focus:border-brand-accent transition-colors"
+                className="w-full bg-white border-4 border-neo-black rounded-md px-3 py-2 text-neo-black focus:outline-none focus:shadow-neo-md focus:-translate-x-0.5 focus:-translate-y-0.5 transition-all duration-150"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-1">Expected Completion</label>
+              <label className="block text-sm font-bold uppercase text-neo-black mb-1">Expected Completion</label>
               <input
                 type="date"
                 value={form.expectedCompletionDate}
                 onChange={(e) => setForm({ ...form, expectedCompletionDate: e.target.value })}
                 min={form.startDate}
-                className="w-full bg-brand-bg border border-brand-card rounded-lg px-3 py-2 text-white focus:outline-none focus:border-brand-accent transition-colors"
+                className="w-full bg-white border-4 border-neo-black rounded-md px-3 py-2 text-neo-black focus:outline-none focus:shadow-neo-md focus:-translate-x-0.5 focus:-translate-y-0.5 transition-all duration-150"
                 required
               />
             </div>
           </div>
 
-          <button
+          <NeoButton
             type="submit"
             disabled={submitting || !form.questName.trim() || !form.expectedCompletionDate}
-            className="w-full py-2.5 rounded-xl bg-gradient-to-r from-brand-accent to-red-600 text-white font-bold hover:opacity-90 disabled:opacity-50 transition-all duration-200"
+            variant="danger"
+            size="md"
+            className="w-full"
           >
             {submitting ? '⏳ Scheduling...' : '📌 Schedule Task'}
-          </button>
+          </NeoButton>
         </form>
-      </div>
+      </NeoCard>
 
       {/* Active Tasks */}
       {activeTasks.length > 0 && (
-        <div className="bg-brand-surface border border-brand-card rounded-2xl p-6">
-          <h3 className="text-lg font-bold mb-3 flex items-center gap-2">
+        <NeoCard>
+          <h3 className="text-lg font-bold uppercase mb-3 flex items-center gap-2">
             <span>🔥</span> Active Tasks
           </h3>
           <div className="space-y-2">
@@ -131,13 +134,13 @@ export function SchedulingLog() {
               />
             ))}
           </div>
-        </div>
+        </NeoCard>
       )}
 
       {/* Upcoming Tasks */}
       {upcomingTasks.length > 0 && (
-        <div className="bg-brand-surface border border-brand-card rounded-2xl p-6">
-          <h3 className="text-lg font-bold mb-3 flex items-center gap-2">
+        <NeoCard>
+          <h3 className="text-lg font-bold uppercase mb-3 flex items-center gap-2">
             <span>📋</span> Upcoming Tasks
           </h3>
           <div className="space-y-2">
@@ -150,14 +153,16 @@ export function SchedulingLog() {
               />
             ))}
           </div>
-        </div>
+        </NeoCard>
       )}
 
       {activeTasks.length === 0 && upcomingTasks.length === 0 && (
-        <div className="bg-brand-surface border border-brand-card rounded-2xl p-6 text-center text-slate-400">
-          <div className="text-4xl mb-2">📅</div>
-          <p>No scheduled tasks yet. Plan ahead!</p>
-        </div>
+        <NeoCard>
+          <div className="text-center text-neutral-500">
+            <div className="text-4xl mb-2">📅</div>
+            <p className="font-bold uppercase">No scheduled tasks yet. Plan ahead!</p>
+          </div>
+        </NeoCard>
       )}
     </div>
   )
@@ -182,19 +187,19 @@ function TaskRow({
   onRemove: () => void
 }) {
   return (
-    <div className="flex items-center gap-3 bg-brand-bg rounded-lg px-3 py-2 text-sm">
+    <div className="flex items-center gap-3 bg-neo-bg border-2 border-neo-black rounded-md px-3 py-2 text-sm">
       <span className="text-lg">{DOMAIN_ICONS[task.domain] ?? '⭐'}</span>
       <div className="flex-1 min-w-0">
-        <div className="font-medium text-slate-200 truncate">{task.questName}</div>
-        <div className="text-xs text-slate-500">
+        <div className="font-bold text-neo-black truncate">{task.questName}</div>
+        <div className="text-xs font-bold text-neutral-500">
           {task.startDate} → {task.expectedCompletionDate}
-          {task.status === 'active' && <span className="ml-1 text-green-400">● Active</span>}
-          {task.status === 'upcoming' && <span className="ml-1 text-yellow-400">● Upcoming</span>}
+          {task.status === 'active' && <span className="ml-1 text-neo-vit">● Active</span>}
+          {task.status === 'upcoming' && <span className="ml-1 text-neo-orange">● Upcoming</span>}
         </div>
       </div>
       <button
         onClick={onComplete}
-        className="text-green-400 hover:text-green-300 transition-colors p-1"
+        className="text-neo-vit hover:scale-110 transition-transform p-1 font-bold"
         aria-label="Complete task"
         title="Mark as done"
       >
@@ -202,7 +207,7 @@ function TaskRow({
       </button>
       <button
         onClick={onRemove}
-        className="text-red-400 hover:text-red-300 transition-colors p-1"
+        className="text-neo-accent hover:scale-110 transition-transform p-1 font-bold"
         aria-label="Remove task"
         title="Remove"
       >

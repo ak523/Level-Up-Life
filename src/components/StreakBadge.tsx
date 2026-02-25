@@ -5,7 +5,7 @@ interface StreakBadgeProps {
 
 export function StreakBadge({ streakDays, reducedMotion }: StreakBadgeProps) {
   return (
-    <div className="flex items-center gap-2 bg-orange-950/40 border border-orange-500/30 rounded-xl px-4 py-2">
+    <div className="flex items-center gap-2 bg-neo-orange border-4 border-neo-black rounded-md px-4 py-2 shadow-neo">
       <span
         className={`text-3xl ${!reducedMotion ? 'animate-flame-flicker' : ''}`}
         style={{ display: 'inline-block' }}
@@ -13,8 +13,8 @@ export function StreakBadge({ streakDays, reducedMotion }: StreakBadgeProps) {
         🔥
       </span>
       <div>
-        <div className="text-xl font-bold text-orange-400">{streakDays}</div>
-        <div className="text-xs text-slate-400">day streak</div>
+        <div className="text-xl font-bold text-neo-black">{streakDays}</div>
+        <div className="text-xs font-bold uppercase text-neo-black/70">day streak</div>
       </div>
     </div>
   )

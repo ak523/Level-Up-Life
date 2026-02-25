@@ -5,20 +5,21 @@ import { calculateFinalXP } from '../lib/rpg-math'
 import { playClick, playXPGain, playSadSound } from '../lib/soundEngine'
 import { vibrateShort } from '../lib/haptics'
 import type { Activity } from '../types'
+import { NeoCard, NeoButton } from './neo'
 
 const DOMAINS: Array<{ value: Activity['domain']; label: string; icon: string; color: string }> = [
-  { value: 'learning', label: 'Learning', icon: '📚', color: 'from-blue-600 to-blue-800' },
-  { value: 'wellbeing', label: 'Wellbeing', icon: '💪', color: 'from-green-600 to-green-800' },
-  { value: 'finance', label: 'Finance', icon: '💰', color: 'from-yellow-600 to-yellow-800' },
-  { value: 'social', label: 'Social', icon: '🤝', color: 'from-purple-600 to-purple-800' },
-  { value: 'misc', label: 'Misc', icon: '⭐', color: 'from-slate-600 to-slate-800' },
-  { value: 'bad_habit', label: 'Bad Habit', icon: '💀', color: 'from-red-700 to-red-900' },
+  { value: 'learning', label: 'Learning', icon: '📚', color: 'bg-neo-int' },
+  { value: 'wellbeing', label: 'Wellbeing', icon: '💪', color: 'bg-neo-vit' },
+  { value: 'finance', label: 'Finance', icon: '💰', color: 'bg-neo-gold' },
+  { value: 'social', label: 'Social', icon: '🤝', color: 'bg-neo-cha' },
+  { value: 'misc', label: 'Misc', icon: '⭐', color: 'bg-neutral-300' },
+  { value: 'bad_habit', label: 'Bad Habit', icon: '💀', color: 'bg-neo-accent' },
 ]
 
 const OUTCOMES: Array<{ value: Activity['outcome']; label: string; color: string }> = [
-  { value: 'completed', label: '✅ Completed', color: 'bg-green-700 hover:bg-green-600 border-green-500' },
-  { value: 'partial', label: '⚡ Partial', color: 'bg-yellow-700 hover:bg-yellow-600 border-yellow-500' },
-  { value: 'failed', label: '❌ Failed', color: 'bg-red-900 hover:bg-red-800 border-red-700' },
+  { value: 'completed', label: '✅ Completed', color: 'bg-neo-vit' },
+  { value: 'partial', label: '⚡ Partial', color: 'bg-neo-gold' },
+  { value: 'failed', label: '❌ Failed', color: 'bg-neo-accent' },
 ]
 
 const RECENT_QUESTS = [
@@ -52,12 +53,6 @@ export function ActivityForm() {
     if (!meta) return 0
     return calculateFinalXP(form, meta)
   }, [form, meta])
-
-  const bgTint = form.outcome === 'completed'
-    ? 'from-green-950/30 to-transparent'
-    : form.outcome === 'partial'
-    ? 'from-yellow-950/30 to-transparent'
-    : 'from-red-950/30 to-transparent'
 
   const filteredSuggestions = RECENT_QUESTS.filter(
     (q) => form.questName && q.toLowerCase().includes(form.questName.toLowerCase())
@@ -96,14 +91,14 @@ export function ActivityForm() {
   }
 
   return (
-    <div className={`rounded-2xl bg-gradient-to-b ${bgTint} bg-brand-surface border border-brand-card p-6 transition-all duration-500`}>
-      <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
+    <NeoCard>
+      <h2 className="text-xl font-bold uppercase mb-6 flex items-center gap-2">
         <span>⚔️</span> Log Quest
       </h2>
       <form onSubmit={handleSubmit} className="space-y-5">
         {/* Quest Name */}
         <div className="relative">
-          <label className="block text-sm font-medium text-slate-300 mb-1">Quest Name</label>
+          <label className="block text-sm font-bold uppercase text-neo-black mb-1">Quest Name</label>
           <input
             type="text"
             value={form.questName}
@@ -113,15 +108,15 @@ export function ActivityForm() {
             }}
             onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
             placeholder="What did you do?"
-            className="w-full bg-brand-bg border border-brand-card rounded-lg px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-brand-accent transition-colors"
+            className="w-full bg-white border-4 border-neo-black rounded-md px-3 py-2 text-neo-black placeholder-neutral-400 focus:outline-none focus:shadow-neo-md focus:-translate-x-0.5 focus:-translate-y-0.5 transition-all duration-150"
             required
           />
           {showSuggestions && filteredSuggestions.length > 0 && (
-            <ul className="absolute z-10 w-full mt-1 bg-brand-surface border border-brand-card rounded-lg shadow-xl">
+            <ul className="absolute z-10 w-full mt-1 bg-white border-4 border-neo-black rounded-md shadow-neo-md">
               {filteredSuggestions.map((s) => (
                 <li
                   key={s}
-                  className="px-3 py-2 hover:bg-brand-card cursor-pointer text-sm transition-colors"
+                  className="px-3 py-2 hover:bg-neo-gold cursor-pointer text-sm font-bold transition-colors"
                   onMouseDown={() => {
                     setForm({ ...form, questName: s })
                     setShowSuggestions(false)
@@ -136,17 +131,17 @@ export function ActivityForm() {
 
         {/* Domain */}
         <div>
-          <label className="block text-sm font-medium text-slate-300 mb-2">Domain</label>
+          <label className="block text-sm font-bold uppercase text-neo-black mb-2">Domain</label>
           <div className="flex gap-2 flex-wrap">
             {DOMAINS.map((d) => (
               <button
                 key={d.value}
                 type="button"
                 onClick={() => setForm({ ...form, domain: d.value })}
-                className={`flex items-center gap-1.5 px-3 py-2 rounded-lg border text-sm font-medium transition-all duration-200 ${
+                className={`flex items-center gap-1.5 px-3 py-2 rounded-md border-4 border-neo-black text-sm font-bold uppercase transition-all duration-150 ${
                   form.domain === d.value
-                    ? `bg-gradient-to-br ${d.color} border-transparent text-white scale-105 shadow-lg`
-                    : 'bg-brand-bg border-brand-card text-slate-400 hover:border-slate-500 hover:scale-105'
+                    ? `${d.color} text-neo-black shadow-neo -translate-x-0.5 -translate-y-0.5`
+                    : 'bg-white text-neutral-500 hover:shadow-neo hover:-translate-x-0.5 hover:-translate-y-0.5'
                 }`}
               >
                 <span>{d.icon}</span>
@@ -158,10 +153,10 @@ export function ActivityForm() {
 
         {/* Difficulty */}
         <div>
-          <label className="block text-sm font-medium text-slate-300 mb-2">
-            Difficulty: <span className="text-brand-accent font-bold">{form.difficulty}/5</span>
+          <label className="block text-sm font-bold uppercase text-neo-black mb-2">
+            Difficulty: <span className="text-neo-accent">{form.difficulty}/5</span>
             {meta && (
-              <span className="ml-2 text-xs text-slate-500">
+              <span className="ml-2 text-xs text-neutral-500 normal-case">
                 (suggested: {meta.expectedDifficulty.toFixed(1)})
               </span>
             )}
@@ -173,11 +168,11 @@ export function ActivityForm() {
             step={1}
             value={form.difficulty}
             onChange={(e) => setForm({ ...form, difficulty: Number(e.target.value) as Activity['difficulty'] })}
-            className="w-full accent-brand-accent cursor-pointer h-2"
+            className="w-full accent-neo-accent cursor-pointer h-3"
           />
-          <div className="flex justify-between text-xs text-slate-500 mt-1">
+          <div className="flex justify-between text-xs font-bold text-neutral-500 mt-1">
             {[1, 2, 3, 4, 5].map((n) => (
-              <span key={n} className={form.difficulty === n ? 'text-brand-accent font-bold' : ''}>
+              <span key={n} className={form.difficulty === n ? 'text-neo-accent' : ''}>
                 {n === 1 ? 'Easy' : n === 3 ? 'Medium' : n === 5 ? 'Hard' : n}
               </span>
             ))}
@@ -186,8 +181,8 @@ export function ActivityForm() {
 
         {/* Duration */}
         <div>
-          <label className="block text-sm font-medium text-slate-300 mb-2">
-            Duration: <span className="text-brand-xp font-bold">{form.durationMinutes} min</span>
+          <label className="block text-sm font-bold uppercase text-neo-black mb-2">
+            Duration: <span className="text-neo-xp">{form.durationMinutes} min</span>
           </label>
           <input
             type="range"
@@ -196,24 +191,26 @@ export function ActivityForm() {
             step={5}
             value={form.durationMinutes}
             onChange={(e) => setForm({ ...form, durationMinutes: Number(e.target.value) })}
-            className="w-full accent-brand-xp cursor-pointer h-2"
+            className="w-full accent-neo-xp cursor-pointer h-3"
           />
-          <div className="flex justify-between text-xs text-slate-500 mt-1">
+          <div className="flex justify-between text-xs font-bold text-neutral-500 mt-1">
             <span>5m</span><span>1h</span><span>2h</span><span>3h</span><span>4h</span>
           </div>
         </div>
 
         {/* Outcome */}
         <div>
-          <label className="block text-sm font-medium text-slate-300 mb-2">Outcome</label>
+          <label className="block text-sm font-bold uppercase text-neo-black mb-2">Outcome</label>
           <div className="flex gap-2">
             {OUTCOMES.map((o) => (
               <button
                 key={o.value}
                 type="button"
                 onClick={() => setForm({ ...form, outcome: o.value })}
-                className={`flex-1 py-2 rounded-lg border text-sm font-medium transition-all duration-200 ${o.color} ${
-                  form.outcome === o.value ? 'opacity-100 scale-105' : 'opacity-60 hover:opacity-80'
+                className={`flex-1 py-2 rounded-md border-4 border-neo-black text-sm font-bold uppercase transition-all duration-150 ${o.color} ${
+                  form.outcome === o.value
+                    ? 'shadow-neo -translate-x-0.5 -translate-y-0.5 text-neo-black'
+                    : 'opacity-50 hover:opacity-80 text-neo-black'
                 }`}
               >
                 {o.label}
@@ -223,24 +220,25 @@ export function ActivityForm() {
         </div>
 
         {/* Boss Toggle */}
-        <div className="flex items-center justify-between bg-brand-bg rounded-xl px-4 py-3 border border-brand-card">
+        <div className="flex items-center justify-between bg-neo-bg border-4 border-neo-black rounded-md px-4 py-3">
           <div>
-            <div className="font-medium flex items-center gap-2">
+            <div className="font-bold uppercase flex items-center gap-2">
               <span>👹</span> Boss Quest
             </div>
-            <div className="text-xs text-slate-500">3× XP multiplier</div>
+            <div className="text-xs font-bold text-neutral-500">3× XP multiplier</div>
           </div>
           <button
             type="button"
             onClick={() => setForm({ ...form, isBoss: !form.isBoss })}
-            className={`relative w-12 h-6 rounded-full transition-all duration-300 ${
-              form.isBoss ? 'bg-brand-accent' : 'bg-slate-700'
+            className={`relative w-14 h-7 rounded-md border-4 border-neo-black transition-all duration-300 ${
+              form.isBoss ? 'bg-neo-accent' : 'bg-neutral-200'
             }`}
           >
             <span
-              className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-300 ${
-                form.isBoss ? 'translate-x-6' : 'translate-x-0.5'
+              className={`absolute top-0 w-5 h-5 bg-white border-2 border-neo-black rounded-sm transition-transform duration-300 ${
+                form.isBoss ? 'translate-x-7' : 'translate-x-0.5'
               }`}
+              style={{ top: '1px' }}
             />
           </button>
         </div>
@@ -248,8 +246,8 @@ export function ActivityForm() {
         {/* Mood, Energy & Anxiety */}
         <div className="grid grid-cols-3 gap-4">
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
-              Mood: <span className="text-brand-accent font-bold">{MOOD_LABELS[form.mood - 1]}</span>
+            <label className="block text-sm font-bold uppercase text-neo-black mb-2">
+              Mood: <span className="text-neo-cha">{MOOD_LABELS[form.mood - 1]}</span>
             </label>
             <div className="flex gap-1">
               {MOOD_LABELS.map((label, i) => (
@@ -257,8 +255,8 @@ export function ActivityForm() {
                   key={label}
                   type="button"
                   onClick={() => setForm({ ...form, mood: (i + 1) as NonNullable<Activity['mood']> })}
-                  className={`flex-1 py-1.5 rounded-lg text-center text-lg transition-all duration-200 ${
-                    form.mood === i + 1 ? 'bg-brand-accent/30 scale-110 border border-brand-accent' : 'bg-brand-bg border border-brand-card opacity-60 hover:opacity-80'
+                  className={`flex-1 py-1.5 rounded-md text-center text-lg transition-all duration-150 border-2 border-neo-black ${
+                    form.mood === i + 1 ? 'bg-neo-cha shadow-neo -translate-y-0.5' : 'bg-white opacity-60 hover:opacity-80'
                   }`}
                   title={label}
                 >
@@ -268,8 +266,8 @@ export function ActivityForm() {
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
-              Energy: <span className="text-brand-xp font-bold">{ENERGY_LABELS[form.energyLevel - 1]}</span>
+            <label className="block text-sm font-bold uppercase text-neo-black mb-2">
+              Energy: <span className="text-neo-xp">{ENERGY_LABELS[form.energyLevel - 1]}</span>
             </label>
             <div className="flex gap-1">
               {ENERGY_LABELS.map((label, i) => (
@@ -277,8 +275,8 @@ export function ActivityForm() {
                   key={label}
                   type="button"
                   onClick={() => setForm({ ...form, energyLevel: (i + 1) as NonNullable<Activity['energyLevel']> })}
-                  className={`flex-1 py-1.5 rounded-lg text-center text-lg transition-all duration-200 ${
-                    form.energyLevel === i + 1 ? 'bg-brand-xp/30 scale-110 border border-brand-xp' : 'bg-brand-bg border border-brand-card opacity-60 hover:opacity-80'
+                  className={`flex-1 py-1.5 rounded-md text-center text-lg transition-all duration-150 border-2 border-neo-black ${
+                    form.energyLevel === i + 1 ? 'bg-neo-xp shadow-neo -translate-y-0.5' : 'bg-white opacity-60 hover:opacity-80'
                   }`}
                   title={label}
                 >
@@ -288,8 +286,8 @@ export function ActivityForm() {
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
-              Anxiety: <span className="text-purple-400 font-bold">{ANXIETY_LABELS[form.anxietyLevel - 1]}</span>
+            <label className="block text-sm font-bold uppercase text-neo-black mb-2">
+              Anxiety: <span className="text-neo-wis">{ANXIETY_LABELS[form.anxietyLevel - 1]}</span>
             </label>
             <div className="flex gap-1">
               {ANXIETY_LABELS.map((label, i) => (
@@ -297,8 +295,8 @@ export function ActivityForm() {
                   key={`anxiety-${i}`}
                   type="button"
                   onClick={() => setForm({ ...form, anxietyLevel: (i + 1) as NonNullable<Activity['anxietyLevel']> })}
-                  className={`flex-1 py-1.5 rounded-lg text-center text-lg transition-all duration-200 ${
-                    form.anxietyLevel === i + 1 ? 'bg-purple-500/30 scale-110 border border-purple-500' : 'bg-brand-bg border border-brand-card opacity-60 hover:opacity-80'
+                  className={`flex-1 py-1.5 rounded-md text-center text-lg transition-all duration-150 border-2 border-neo-black ${
+                    form.anxietyLevel === i + 1 ? 'bg-neo-wis shadow-neo -translate-y-0.5' : 'bg-white opacity-60 hover:opacity-80'
                   }`}
                   title={label}
                 >
@@ -310,22 +308,24 @@ export function ActivityForm() {
         </div>
 
         {/* XP Preview */}
-        <div className={`bg-brand-bg rounded-xl px-4 py-3 border ${previewXP < 0 ? 'border-red-500/30' : 'border-brand-xp/30'} flex items-center justify-between`}>
-          <span className="text-sm text-slate-400">Estimated XP</span>
-          <span className={`text-2xl font-bold ${previewXP < 0 ? 'text-red-400' : 'text-brand-xp'} ${!reducedMotion ? 'animate-xp-pop' : ''}`} key={previewXP}>
+        <div className={`bg-neo-bg rounded-md px-4 py-3 border-4 ${previewXP < 0 ? 'border-neo-accent' : 'border-neo-black'} flex items-center justify-between`}>
+          <span className="text-sm font-bold uppercase text-neutral-500">Estimated XP</span>
+          <span className={`text-2xl font-bold ${previewXP < 0 ? 'text-neo-accent' : 'text-neo-xp'} ${!reducedMotion ? 'animate-xp-pop' : ''}`} key={previewXP}>
             {previewXP < 0 ? '' : '+'}{previewXP}
           </span>
         </div>
 
         {/* Submit */}
-        <button
+        <NeoButton
           type="submit"
           disabled={submitting || !form.questName.trim()}
-          className="w-full py-3 rounded-xl bg-gradient-to-r from-brand-accent to-red-600 text-white font-bold text-lg hover:opacity-90 disabled:opacity-50 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-lg"
+          variant="danger"
+          size="lg"
+          className="w-full"
         >
           {submitting ? '⏳ Logging...' : '🗡️ Complete Quest'}
-        </button>
+        </NeoButton>
       </form>
-    </div>
+    </NeoCard>
   )
 }
