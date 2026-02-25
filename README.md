@@ -16,9 +16,11 @@ A **gamified life-analytics PWA** that turns your daily habits into XP, levels, 
 ### 📊 Dashboard & Analytics
 - **Hero stats panel** showing current level, total XP, and progress to next level
 - **Attribute bars** for all five character stats (INT, WIS, CHA, VIT, GOLD)
+- **Stat cards** for streak freezes owned, lifetime critical hits, and current expected difficulty
 - **Activity history** with recent logs
 - **Mood, energy & anxiety trends** visualization
 - **Streak badge** displaying your current consecutive-day streak 🔥
+- **Bottom navigation bar** with six tabs (Home, Quest, Schedule, Heatmap, Shop, Settings) and live Gold counter
 
 ### 📅 Task Scheduling
 - **Schedule upcoming tasks** with a name, domain, start date, and expected completion date
@@ -35,15 +37,19 @@ A **gamified life-analytics PWA** that turns your daily habits into XP, levels, 
 ### 🛒 In-Game Shop
 - Purchase **Streak Freezes** (50 GOLD each) to protect your streak when you miss a day
 
+### 💰 Gold Milestones
+- Earn **10 GOLD** each time your total XP crosses a milestone threshold
+- Milestones are spaced at **random 300–400 XP intervals**, keeping rewards surprising
+
 ### ⚙️ Settings & Accessibility
-- Toggle **sound effects** (Web Audio API sine-wave tones for click, XP gain, purchase, streak saved, sad/fail)
+- Toggle **sound effects** (Web Audio API sine-wave tones for click, XP gain, critical success, level up, purchase, streak saved, sad/fail)
 - Toggle **reduced motion** to disable animations
 - **Haptic feedback** via the Vibration API (short, success, and critical vibration patterns)
 - Full **data export/import** as version-tagged JSON (v2) for backup and restore, including scheduled tasks
 
 ### 🎊 Feedback & Celebrations
 - Post-submission **feedback modal** showing XP earned, base XP breakdown, attribute changes, and critical-hit notifications
-- **Confetti animation** on level-up
+- **Confetti animation** on level-up and critical hits
 - **Daily nudge** to encourage logging your first activity each day
 
 ---
@@ -69,13 +75,14 @@ A **gamified life-analytics PWA** that turns your daily habits into XP, levels, 
 | **WIS** | Wisdom | Learning, Wellbeing, Finance, Misc |
 | **CHA** | Charisma | Social, Misc |
 | **VIT** | Vitality | Wellbeing, Misc (lowered by Bad Habits) |
-| **GOLD** | Currency | Finance (spent in the Shop) |
+| **GOLD** | Currency | Finance, milestones (spent in the Shop) |
 
 ### Additional Tracking
 - **Streak days** — consecutive days with at least one logged activity
 - **Mood, energy & anxiety** — optional per-activity wellbeing snapshots (1–5 scale)
 - **Critical success count** — lifetime total of critical hits rolled
 - **Recent outcomes** — last 30 activity outcomes for adaptive difficulty
+- **Gold milestones** — next XP threshold for the periodic 10 GOLD reward
 
 ---
 
@@ -96,6 +103,7 @@ Base XP = durationMinutes × difficulty
 | Streak | `1 + min(0.05 × streakDays, 0.5)` | Up to +50% bonus at 10+ day streaks |
 | Boss | `3.0` if boss quest, else `1.0` | Triple XP for high-stakes activities |
 | Critical Hit | `2×` (15% random chance) | Surprise double XP + 15 GOLD bonus |
+| Fail Penalty | `−5 XP` if outcome = failed | Small XP deduction on failures |
 
 **Bad habits** bypass all multipliers and yield **negative XP** (`-baseXP`).
 
@@ -150,6 +158,11 @@ This keeps tasks in the "Goldilocks zone" — challenging enough to be engaging 
 - Every activity submission has a **15% chance** of triggering a critical success
 - Critical hits grant **2× final XP** and a **+15 GOLD bonus**
 - Bad habits are excluded from critical hits
+
+### Gold Milestones
+- Each time your cumulative XP crosses a milestone, you earn **+10 GOLD**
+- Milestones are spaced at **random intervals between 300 and 400 XP**
+- The next milestone threshold is recalculated after each reward, keeping the timing unpredictable
 
 ---
 
