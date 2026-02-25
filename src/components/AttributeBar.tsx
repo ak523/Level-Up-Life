@@ -14,12 +14,12 @@ export function AttributeBar({ name, value, color, icon }: AttributeBarProps) {
       <span className="text-lg w-6 text-center">{icon}</span>
       <div className="flex-1">
         <div className="flex justify-between text-xs mb-0.5">
-          <span className="font-semibold text-slate-300">{name}</span>
-          <span className="text-slate-400">{value}</span>
+          <span className="font-bold uppercase text-neo-black">{name}</span>
+          <span className="font-bold text-neutral-500">{value}</span>
         </div>
-        <div className="h-2 bg-brand-surface rounded-full overflow-hidden">
+        <div className="h-4 bg-white border-4 border-neo-black rounded-md overflow-hidden">
           <div
-            className="h-full rounded-full transition-all duration-700"
+            className="h-full rounded-none transition-all duration-700"
             style={{ width: `${pct}%`, backgroundColor: color }}
           />
         </div>

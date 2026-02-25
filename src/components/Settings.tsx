@@ -1,6 +1,7 @@
 import React, { useRef } from 'react'
 import { useUIStore } from '../state/useUIStore'
 import { exportData, importData } from '../data/repositories/exportImport'
+import { NeoCard, NeoButton } from './neo'
 
 export function Settings() {
   const { soundEnabled, reducedMotion, toggleSound, toggleReducedMotion } = useUIStore()
@@ -40,8 +41,8 @@ export function Settings() {
 
   return (
     <div className="space-y-4">
-      <div className="bg-brand-surface border border-brand-card rounded-2xl p-6">
-        <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
+      <NeoCard>
+        <h2 className="text-xl font-bold uppercase mb-6 flex items-center gap-2">
           <span>⚙️</span> Settings
         </h2>
 
@@ -61,31 +62,35 @@ export function Settings() {
             onToggle={toggleReducedMotion}
           />
         </div>
-      </div>
+      </NeoCard>
 
-      <div className="bg-brand-surface border border-brand-card rounded-2xl p-6">
-        <h3 className="font-bold text-lg mb-2 flex items-center gap-2"><span>🔒</span> Privacy</h3>
-        <p className="text-sm text-slate-400">
-          <strong className="text-white">All data stays on this device.</strong> No analytics, no tracking,
+      <NeoCard>
+        <h3 className="font-bold uppercase text-lg mb-2 flex items-center gap-2"><span>🔒</span> Privacy</h3>
+        <p className="text-sm text-neutral-500">
+          <strong className="text-neo-black">All data stays on this device.</strong> No analytics, no tracking,
           no backend. Your quests and progress are stored locally using IndexedDB.
         </p>
-      </div>
+      </NeoCard>
 
-      <div className="bg-brand-surface border border-brand-card rounded-2xl p-6">
-        <h3 className="font-bold text-lg mb-4 flex items-center gap-2"><span>📦</span> Data Management</h3>
+      <NeoCard>
+        <h3 className="font-bold uppercase text-lg mb-4 flex items-center gap-2"><span>📦</span> Data Management</h3>
         <div className="flex gap-3">
-          <button
+          <NeoButton
             onClick={handleExport}
-            className="flex-1 py-2 rounded-lg bg-blue-700 hover:bg-blue-600 text-white font-medium transition-all duration-200 hover:scale-[1.02]"
+            variant="primary"
+            size="md"
+            className="flex-1"
           >
             📤 Export JSON
-          </button>
-          <button
+          </NeoButton>
+          <NeoButton
             onClick={() => fileInputRef.current?.click()}
-            className="flex-1 py-2 rounded-lg bg-purple-700 hover:bg-purple-600 text-white font-medium transition-all duration-200 hover:scale-[1.02]"
+            variant="secondary"
+            size="md"
+            className="flex-1"
           >
             📥 Import JSON
-          </button>
+          </NeoButton>
           <input
             ref={fileInputRef}
             type="file"
@@ -95,9 +100,9 @@ export function Settings() {
           />
         </div>
         {statusMessage && (
-          <div className="mt-3 text-sm text-center text-slate-300 animate-slide-up">{statusMessage}</div>
+          <div className="mt-3 text-sm text-center font-bold text-neo-black animate-slide-up">{statusMessage}</div>
         )}
-      </div>
+      </NeoCard>
     </div>
   )
 }
@@ -116,20 +121,21 @@ function ToggleRow({
   onToggle: () => void
 }) {
   return (
-    <div className="flex items-center justify-between bg-brand-bg rounded-xl px-4 py-3 border border-brand-card">
+    <div className="flex items-center justify-between bg-neo-bg border-4 border-neo-black rounded-md px-4 py-3">
       <div className="flex items-start gap-3">
         <span className="text-xl">{icon}</span>
         <div>
-          <div className="font-medium text-white">{label}</div>
-          <div className="text-xs text-slate-400">{description}</div>
+          <div className="font-bold uppercase text-neo-black">{label}</div>
+          <div className="text-xs font-bold text-neutral-500">{description}</div>
         </div>
       </div>
       <button
         onClick={onToggle}
-        className={`relative w-12 h-6 rounded-full transition-all duration-300 ${enabled ? 'bg-brand-accent' : 'bg-slate-700'}`}
+        className={`relative w-14 h-7 rounded-md border-4 border-neo-black transition-all duration-300 ${enabled ? 'bg-neo-vit' : 'bg-neutral-200'}`}
       >
         <span
-          className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-300 ${enabled ? 'translate-x-6' : 'translate-x-0.5'}`}
+          className={`absolute top-0 w-5 h-5 bg-white border-2 border-neo-black rounded-sm transition-transform duration-300 ${enabled ? 'translate-x-7' : 'translate-x-0.5'}`}
+          style={{ top: '1px' }}
         />
       </button>
     </div>

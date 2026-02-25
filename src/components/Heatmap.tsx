@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { getAllActivities } from '../data/repositories/activityRepo'
+import { NeoCard } from './neo'
 
 export function Heatmap() {
   const [dailyXP, setDailyXP] = useState<Record<string, number>>({})
@@ -51,23 +52,32 @@ export function Heatmap() {
     })
   }
 
+  const getIntensityColor = (xp: number): string => {
+    if (xp <= 0) return '#FFFDF7'
+    const intensity = Math.max(0.15, xp / maxXP)
+    if (intensity < 0.3) return '#BAE6FD'
+    if (intensity < 0.5) return '#7DD3FC'
+    if (intensity < 0.75) return '#38BDF8'
+    return '#0284C7'
+  }
+
   return (
     <div className="space-y-4">
-      <div className="bg-brand-surface border border-brand-card rounded-2xl p-6">
+      <NeoCard>
         <div className="flex items-center justify-between mb-4">
           <button
             onClick={prevMonth}
-            className="text-slate-400 hover:text-white transition-colors px-2 py-1"
+            className="text-neo-black hover:bg-neo-gold border-4 border-neo-black rounded-md px-2 py-1 font-bold transition-all duration-150 hover:shadow-neo hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-1 active:translate-y-1 active:shadow-none"
             aria-label="Previous month"
           >
             ◀
           </button>
-          <h2 className="text-lg font-bold flex items-center gap-2">
+          <h2 className="text-lg font-bold uppercase flex items-center gap-2">
             <span>📊</span> {monthLabel}
           </h2>
           <button
             onClick={nextMonth}
-            className="text-slate-400 hover:text-white transition-colors px-2 py-1"
+            className="text-neo-black hover:bg-neo-gold border-4 border-neo-black rounded-md px-2 py-1 font-bold transition-all duration-150 hover:shadow-neo hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-1 active:translate-y-1 active:shadow-none"
             aria-label="Next month"
           >
             ▶
@@ -77,7 +87,7 @@ export function Heatmap() {
         {/* Day headers */}
         <div className="grid grid-cols-7 gap-1 mb-1">
           {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((d) => (
-            <div key={d} className="text-center text-xs text-slate-500 font-medium py-1">
+            <div key={d} className="text-center text-xs text-neo-black font-bold uppercase py-1">
               {d}
             </div>
           ))}
@@ -87,25 +97,23 @@ export function Heatmap() {
         <div className="grid grid-cols-7 gap-1">
           {cells.map((cell, i) => {
             if (!cell) {
-              return <div key={`empty-${i}`} className="aspect-square rounded-md" />
+              return <div key={`empty-${i}`} className="aspect-square rounded-none" />
             }
-            const intensity = cell.xp > 0 ? Math.max(0.15, cell.xp / maxXP) : 0
             const dayNum = parseInt(cell.date.split('-')[2])
+            const bgColor = getIntensityColor(cell.xp)
             return (
               <div
                 key={cell.date}
-                className="aspect-square rounded-md flex items-center justify-center text-xs relative group cursor-default"
-                style={{
-                  backgroundColor: intensity > 0 ? `rgba(0, 212, 255, ${intensity})` : 'rgba(255,255,255,0.03)',
-                }}
+                className="aspect-square rounded-none border-2 border-neo-black flex items-center justify-center text-xs relative group cursor-default"
+                style={{ backgroundColor: bgColor }}
                 title={`${cell.date}: ${cell.xp} XP`}
               >
-                <span className={`${intensity > 0.5 ? 'text-white' : 'text-slate-500'} text-[10px]`}>
+                <span className={`text-[10px] font-bold ${cell.xp > 0 ? 'text-neo-black' : 'text-neutral-400'}`}>
                   {dayNum}
                 </span>
                 {/* Tooltip on hover */}
                 <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 hidden group-hover:block z-10">
-                  <div className="bg-brand-bg border border-brand-card rounded px-2 py-1 text-xs text-slate-300 whitespace-nowrap shadow-lg">
+                  <div className="bg-white border-4 border-neo-black rounded-md px-2 py-1 text-xs text-neo-black font-bold whitespace-nowrap shadow-neo">
                     {cell.xp > 0 ? `${cell.xp} XP` : 'No activity'}
                   </div>
                 </div>
@@ -115,20 +123,18 @@ export function Heatmap() {
         </div>
 
         {/* Legend */}
-        <div className="flex items-center justify-center gap-2 mt-4 text-xs text-slate-500">
+        <div className="flex items-center justify-center gap-2 mt-4 text-xs font-bold text-neutral-500 uppercase">
           <span>Less</span>
-          {[0, 0.25, 0.5, 0.75, 1].map((level) => (
+          {['#FFFDF7', '#BAE6FD', '#7DD3FC', '#38BDF8', '#0284C7'].map((color) => (
             <div
-              key={level}
-              className="w-4 h-4 rounded-sm"
-              style={{
-                backgroundColor: level > 0 ? `rgba(0, 212, 255, ${level})` : 'rgba(255,255,255,0.03)',
-              }}
+              key={color}
+              className="w-5 h-5 rounded-none border-2 border-neo-black"
+              style={{ backgroundColor: color }}
             />
           ))}
           <span>More</span>
         </div>
-      </div>
+      </NeoCard>
     </div>
   )
 }

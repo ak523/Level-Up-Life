@@ -5,17 +5,17 @@ export function DailyNudge() {
   if (nudgeDismissed) return null
 
   return (
-    <div className="animate-nudge-pulse bg-gradient-to-r from-brand-accent/20 to-purple-600/20 border border-brand-accent/40 rounded-xl px-4 py-3 flex items-center justify-between gap-4">
+    <div className="animate-nudge-pulse bg-neo-gold border-4 border-neo-black rounded-md px-4 py-3 flex items-center justify-between gap-4 shadow-neo">
       <div className="flex items-center gap-3">
         <span className="text-2xl">⚔️</span>
-        <p className="text-sm text-slate-200">
-          <span className="font-bold text-brand-accent">Your daily quest awaits</span>
+        <p className="text-sm text-neo-black">
+          <span className="font-bold uppercase">Your daily quest awaits</span>
           {' '}— don't break the streak!
         </p>
       </div>
       <button
         onClick={dismissNudge}
-        className="text-slate-500 hover:text-white transition-colors text-lg leading-none"
+        className="text-neo-black hover:text-neo-accent transition-colors text-lg leading-none font-bold"
         aria-label="Dismiss nudge"
       >
         ×

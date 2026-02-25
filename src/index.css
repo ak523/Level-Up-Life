@@ -4,7 +4,7 @@
 
 :root {
   font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 * {
@@ -13,8 +13,8 @@
 
 body {
   margin: 0;
-  background-color: #1a1a2e;
-  color: #e2e8f0;
+  background-color: #FFFDF7;
+  color: #1a1a1a;
   min-height: 100vh;
 }
 
@@ -22,14 +22,14 @@ body {
   width: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #16213e;
+  background: #FFFDF7;
 }
 ::-webkit-scrollbar-thumb {
-  background: #0f3460;
-  border-radius: 3px;
+  background: #1a1a1a;
+  border-radius: 0px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #e94560;
+  background: #333;
 }
 
 .xp-bar-inner {
