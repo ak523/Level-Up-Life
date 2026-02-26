@@ -99,6 +99,32 @@ export function randomGoldInterval(): number {
   return 300 + Math.floor(Math.random() * 101)
 }
 
+/** Calculate XP from a treasury expense (amount × 0.1, capped at 50) */
+export function calculateTreasuryXP(amount: number, statAffinity: string): number {
+  if (statAffinity === 'neutral') return 0
+  return Math.min(50, Math.round(amount * 0.1))
+}
+
+/** Map stat affinity to attribute deltas for treasury expenses */
+export function calculateTreasuryAttributeDeltas(
+  statAffinity: string,
+  xpGained: number
+): Partial<GameMeta['attributes']> {
+  if (xpGained <= 0) return {}
+  switch (statAffinity) {
+    case 'VIT':
+      return { VIT: Math.max(1, Math.round(xpGained / 20)) }
+    case 'INT':
+      return { INT: Math.max(1, Math.round(xpGained / 20)) }
+    case 'CHA':
+      return { CHA: Math.max(1, Math.round(xpGained / 20)) }
+    case 'WIS':
+      return { WIS: Math.max(1, Math.round(xpGained / 20)) }
+    default:
+      return {}
+  }
+}
+
 /** XP progress within current level */
 export function computeXPProgress(
   totalXP: number,

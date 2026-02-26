@@ -24,6 +24,34 @@ export interface ScheduledTask {
   createdAt: string
 }
 
+export type StatAffinity = 'VIT' | 'INT' | 'CHA' | 'WIS' | 'neutral'
+
+export interface Transaction {
+  id?: number
+  type: 'bounty' | 'upkeep'
+  description: string
+  amount: number
+  category: string
+  statAffinity: StatAffinity
+  date: string
+  timestamp: string
+  recurring: boolean
+  xpAwarded: number
+}
+
+export interface Budget {
+  id?: number
+  category: string
+  monthlyLimit: number
+  month: string // YYYY-MM format
+}
+
+export interface TreasurySettings {
+  currencySymbol: string
+  privacyMode: boolean
+  exchangeRate: number // real currency units per 1 in-game GOLD
+}
+
 export interface GameMeta {
   currentLevel: number
   totalXP: number
@@ -45,6 +73,7 @@ export interface GameMeta {
   }>
   criticalSuccessCount: number
   nextGoldMilestone: number
+  treasurySettings?: TreasurySettings
 }
 
 export interface FeedbackResult {

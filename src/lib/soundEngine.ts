@@ -69,3 +69,24 @@ export function playSadSound(): void {
   playTone(330, 0.25, 'sine', 0.15)
   setTimeout(() => playTone(262, 0.35, 'sine', 0.12), 250)
 }
+
+/** Cha-ching sound for logging income (bounty) */
+export function playChaChingSound(): void {
+  playTone(1200, 0.08, 'sine', 0.25)
+  setTimeout(() => playTone(1600, 0.08, 'sine', 0.2), 80)
+  setTimeout(() => playTone(2000, 0.15, 'sine', 0.15), 160)
+}
+
+/** Paper crumple sound for logging expenses (upkeep) */
+export function playCrumpleSound(): void {
+  playTone(200, 0.15, 'sawtooth', 0.1)
+  setTimeout(() => playTone(150, 0.1, 'sawtooth', 0.08), 100)
+  setTimeout(() => playTone(180, 0.12, 'sawtooth', 0.06), 180)
+}
+
+/** Shatter/broken shield sound when budget is exceeded */
+export function playShatterSound(): void {
+  playTone(400, 0.15, 'square', 0.2)
+  setTimeout(() => playTone(200, 0.2, 'sawtooth', 0.15), 100)
+  setTimeout(() => playTone(100, 0.3, 'sawtooth', 0.1), 250)
+}

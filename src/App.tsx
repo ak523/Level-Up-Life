@@ -9,6 +9,7 @@ import { Settings } from './components/Settings'
 import { NavBar } from './components/NavBar'
 import { SchedulingLog } from './components/SchedulingLog'
 import { Heatmap } from './components/Heatmap'
+import { Treasury } from './components/Treasury'
 
 export default function App() {
   const { loadData } = useGameStore()
@@ -33,6 +34,7 @@ export default function App() {
         {activeTab === 'dashboard' && <Dashboard />}
         {activeTab === 'form' && <ActivityForm />}
         {activeTab === 'schedule' && <SchedulingLog />}
+        {activeTab === 'treasury' && <Treasury />}
         {activeTab === 'heatmap' && <Heatmap />}
         {activeTab === 'shop' && <Shop />}
         {activeTab === 'settings' && <Settings />}
