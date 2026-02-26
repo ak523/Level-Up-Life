@@ -18,7 +18,7 @@ A **gamified life-analytics PWA** that turns your daily habits into XP, levels, 
 - **Attribute bars** for all five character stats (INT, WIS, CHA, VIT, GOLD)
 - **Stat cards** for streak freezes owned, lifetime critical hits, and current expected difficulty
 - **Activity history** with recent logs
-- **Mood, energy & anxiety trends** visualization
+- **Mood, energy & anxiety** emoji icons shown per activity in the history log
 - **Streak badge** displaying your current consecutive-day streak 🔥
 - **Bottom navigation bar** with six tabs (Home, Quest, Schedule, Heatmap, Shop, Settings) and live Gold counter
 
@@ -48,7 +48,7 @@ A **gamified life-analytics PWA** that turns your daily habits into XP, levels, 
 - Full **data export/import** as version-tagged JSON (v2) for backup and restore, including scheduled tasks
 
 ### 🎊 Feedback & Celebrations
-- Post-submission **feedback modal** showing XP earned, base XP breakdown, attribute changes, and critical-hit notifications
+- Post-submission **feedback modal** showing XP earned, base XP breakdown, stat gains, critical-hit notifications, level-up celebrations, and a suggested difficulty hint
 - **Confetti animation** on level-up and critical hits
 - **Daily nudge** to encourage logging your first activity each day
 
@@ -64,7 +64,7 @@ A **gamified life-analytics PWA** that turns your daily habits into XP, levels, 
 | 💪 **Wellbeing** | Exercise, health, self-care | VIT ↑, WIS ↑ |
 | 💰 **Finance** | Saving, budgeting, earning | GOLD ↑, WIS ↑ |
 | 🤝 **Social** | Relationships, networking, community | CHA ↑ |
-| 🔧 **Misc** | General tasks and chores | All stats ↑ (small) |
+| ⭐ **Misc** | General tasks and chores | INT ↑, WIS ↑, CHA ↑, VIT ↑ (small) |
 | 🚫 **Bad Habit** | Habits you want to break | VIT ↓, WIS ↓ (negative XP) |
 
 ### Five Character Attributes
@@ -134,7 +134,7 @@ Base delta = max(1, round(xpGained / 20))
 - **Wellbeing**: VIT + base, WIS + ⌈base/2⌉
 - **Finance**: GOLD + base, WIS + ⌈base/2⌉
 - **Social**: CHA + base
-- **Misc**: All stats + ⌈base/4⌉ (small balanced boost)
+- **Misc**: INT, WIS, CHA, VIT + ⌈base/4⌉ (small balanced boost)
 - **Bad Habit**: VIT − penalty, WIS − ⌈penalty/2⌉
 
 ### Goldilocks Adaptive Difficulty
