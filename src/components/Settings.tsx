@@ -1,12 +1,31 @@
 import React, { useRef } from 'react'
 import { useUIStore } from '../state/useUIStore'
+import { useGameStore } from '../state/useGameStore'
 import { exportData, importData } from '../data/repositories/exportImport'
-import { NeoCard, NeoButton } from './neo'
+import { updateGameMeta } from '../data/repositories/gameMetaRepo'
+import { NeoCard, NeoButton, NeoInput } from './neo'
+import type { TreasurySettings } from '../types'
+
+const CURRENCY_OPTIONS = ['$', '€', '£', '¥', '₹', '₩', '₽', 'R$']
 
 export function Settings() {
   const { soundEnabled, reducedMotion, toggleSound, toggleReducedMotion } = useUIStore()
+  const { meta, loadData } = useGameStore()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [statusMessage, setStatusMessage] = React.useState('')
+
+  const treasurySettings: TreasurySettings = meta?.treasurySettings ?? {
+    currencySymbol: '$',
+    privacyMode: false,
+    exchangeRate: 10,
+  }
+
+  const updateTreasurySetting = async (updates: Partial<TreasurySettings>) => {
+    if (!meta) return
+    const newSettings = { ...treasurySettings, ...updates }
+    await updateGameMeta({ treasurySettings: newSettings })
+    await loadData()
+  }
 
   const handleExport = async () => {
     try {
@@ -61,6 +80,53 @@ export function Settings() {
             enabled={reducedMotion}
             onToggle={toggleReducedMotion}
           />
+        </div>
+      </NeoCard>
+
+      <NeoCard>
+        <h3 className="font-bold uppercase text-lg mb-4 flex items-center gap-2"><span>💰</span> Treasury Settings</h3>
+        <div className="space-y-4">
+          <div className="flex items-center justify-between bg-neo-bg border-4 border-neo-black rounded-md px-4 py-3">
+            <div>
+              <div className="font-bold uppercase text-neo-black">Currency Symbol</div>
+              <div className="text-xs font-bold text-neutral-500">Display currency for treasury</div>
+            </div>
+            <select
+              value={treasurySettings.currencySymbol}
+              onChange={(e) => updateTreasurySetting({ currencySymbol: e.target.value })}
+              aria-label="Currency symbol"
+              className="bg-white border-4 border-neo-black rounded-md px-3 py-1.5 font-bold text-neo-black"
+            >
+              {CURRENCY_OPTIONS.map((c) => (
+                <option key={c} value={c}>{c}</option>
+              ))}
+            </select>
+          </div>
+
+          <ToggleRow
+            label="Privacy Mode"
+            description="Blur financial numbers, show only percentages"
+            icon="🔒"
+            enabled={treasurySettings.privacyMode}
+            onToggle={() => updateTreasurySetting({ privacyMode: !treasurySettings.privacyMode })}
+          />
+
+          <div className="bg-neo-bg border-4 border-neo-black rounded-md px-4 py-3">
+            <div className="font-bold uppercase text-neo-black mb-1">Exchange Rate</div>
+            <div className="text-xs font-bold text-neutral-500 mb-2">
+              {treasurySettings.currencySymbol}{treasurySettings.exchangeRate} real = 1 In-Game GOLD
+            </div>
+            <NeoInput
+              type="number"
+              min="1"
+              step="1"
+              value={String(treasurySettings.exchangeRate)}
+              onChange={(e) => {
+                const val = parseInt(e.target.value)
+                if (!isNaN(val) && val > 0) updateTreasurySetting({ exchangeRate: val })
+              }}
+            />
+          </div>
         </div>
       </NeoCard>
 

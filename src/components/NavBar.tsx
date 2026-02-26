@@ -5,6 +5,7 @@ const TABS = [
   { id: 'dashboard', label: 'Home', icon: '🏠' },
   { id: 'form', label: 'Quest', icon: '⚔️' },
   { id: 'schedule', label: 'Schedule', icon: '📅' },
+  { id: 'treasury', label: 'Treasury', icon: '💰' },
   { id: 'heatmap', label: 'Heatmap', icon: '📊' },
   { id: 'shop', label: 'Shop', icon: '🏪' },
   { id: 'settings', label: 'Settings', icon: '⚙️' },

@@ -9,6 +9,8 @@ import {
   computeLevelFromXP,
   computeXPProgress,
   randomGoldInterval,
+  calculateTreasuryXP,
+  calculateTreasuryAttributeDeltas,
 } from './rpg-math'
 
 describe('calculateBaseXP', () => {
@@ -233,5 +235,59 @@ describe('randomGoldInterval', () => {
   it('produces varying values over many calls', () => {
     const values = new Set(Array.from({ length: 500 }, () => randomGoldInterval()))
     expect(values.size).toBeGreaterThan(1)
+  })
+})
+
+describe('calculateTreasuryXP', () => {
+  it('returns amount × 0.1 for non-neutral affinity', () => {
+    expect(calculateTreasuryXP(100, 'VIT')).toBe(10)
+    expect(calculateTreasuryXP(200, 'INT')).toBe(20)
+  })
+
+  it('caps at 50 XP per transaction', () => {
+    expect(calculateTreasuryXP(1000, 'WIS')).toBe(50)
+    expect(calculateTreasuryXP(5000, 'CHA')).toBe(50)
+  })
+
+  it('returns 0 for neutral affinity', () => {
+    expect(calculateTreasuryXP(500, 'neutral')).toBe(0)
+  })
+
+  it('rounds to nearest integer', () => {
+    expect(calculateTreasuryXP(15, 'VIT')).toBe(2)
+    expect(calculateTreasuryXP(7, 'INT')).toBe(1)
+  })
+
+  it('returns 0 for zero amount', () => {
+    expect(calculateTreasuryXP(0, 'VIT')).toBe(0)
+  })
+})
+
+describe('calculateTreasuryAttributeDeltas', () => {
+  it('returns VIT delta for VIT affinity', () => {
+    const deltas = calculateTreasuryAttributeDeltas('VIT', 20)
+    expect(deltas.VIT).toBe(1)
+    expect(deltas.INT).toBeUndefined()
+  })
+
+  it('returns INT delta for INT affinity', () => {
+    const deltas = calculateTreasuryAttributeDeltas('INT', 20)
+    expect(deltas.INT).toBe(1)
+    expect(deltas.VIT).toBeUndefined()
+  })
+
+  it('returns CHA delta for CHA affinity', () => {
+    const deltas = calculateTreasuryAttributeDeltas('CHA', 40)
+    expect(deltas.CHA).toBe(2)
+  })
+
+  it('returns WIS delta for WIS affinity', () => {
+    const deltas = calculateTreasuryAttributeDeltas('WIS', 50)
+    expect(deltas.WIS).toBeGreaterThan(0)
+  })
+
+  it('returns empty for neutral or zero XP', () => {
+    expect(calculateTreasuryAttributeDeltas('neutral', 10)).toEqual({})
+    expect(calculateTreasuryAttributeDeltas('VIT', 0)).toEqual({})
   })
 })
