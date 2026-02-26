@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useTreasuryStore } from '../state/useTreasuryStore'
 import { useGameStore } from '../state/useGameStore'
 import { useUIStore } from '../state/useUIStore'
-import { playChaChingSound, playCrumpleSound, playShatterSound } from '../lib/soundEngine'
+import { playChaChingSound, playCrumpleSound } from '../lib/soundEngine'
 import { NeoCard, NeoButton, NeoInput, NeoProgressBar } from './neo'
 import type { StatAffinity } from '../types'
 
@@ -271,7 +271,6 @@ function LedgerView() {
 function VaultView() {
   const { budgets, monthlySpending, addBudget, removeBudget, currentMonth } = useTreasuryStore()
   const { meta } = useGameStore()
-  const { soundEnabled } = useUIStore()
   const [newCategory, setNewCategory] = useState('')
   const [newLimit, setNewLimit] = useState('')
 
@@ -317,11 +316,6 @@ function VaultView() {
               const percentage = Math.min(100, (spent / budget.monthlyLimit) * 100)
               const remaining = Math.max(0, budget.monthlyLimit - spent)
               const color = getBudgetColor(spent, budget.monthlyLimit)
-              const exceeded = spent > budget.monthlyLimit
-
-              if (exceeded && soundEnabled) {
-                setTimeout(() => playShatterSound(), 0)
-              }
 
               return (
                 <div key={budget.id} className="bg-neo-bg border-4 border-neo-black rounded-md p-3">

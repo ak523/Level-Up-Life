@@ -69,7 +69,7 @@ export const useTreasuryStore = create<TreasuryStore>((set, get) => ({
       xpAwarded = calculateTreasuryXP(input.amount, input.statAffinity)
     }
 
-    // Whale bonus: income larger than average triggers 2x XP
+    // Whale bonus: income larger than average triggers "Jackpot" badge
     if (input.type === 'bounty') {
       const avg = get().averageIncome
       if (avg > 0 && input.amount > avg) {

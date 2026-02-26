@@ -33,11 +33,17 @@ export async function deleteBudget(id: number): Promise<void> {
   await db.budgets.delete(id)
 }
 
-/** Get total spent per category for a given month */
+/** Get total spent per category for a given month (YYYY-MM) */
 export async function getMonthlySpending(month: string): Promise<Record<string, number>> {
+  // Calculate the first day of next month for proper upper bound
+  const [year, mon] = month.split('-').map(Number)
+  const nextMonth = mon === 12
+    ? `${year + 1}-01-01`
+    : `${year}-${String(mon + 1).padStart(2, '0')}-01`
+
   const transactions = await db.treasury
     .where('date')
-    .between(month + '-01', month + '-31', true, true)
+    .between(month + '-01', nextMonth, true, false)
     .toArray()
 
   const spending: Record<string, number> = {}
