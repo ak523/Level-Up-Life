@@ -20,7 +20,7 @@ A **gamified life-analytics PWA** that turns your daily habits into XP, levels, 
 - **Activity history** with recent logs
 - **Mood, energy & anxiety** emoji icons shown per activity in the history log
 - **Streak badge** displaying your current consecutive-day streak 🔥
-- **Bottom navigation bar** with six tabs (Home, Quest, Schedule, Heatmap, Shop, Settings) and live Gold counter
+- **Bottom navigation bar** with seven tabs (Home, Quest, Schedule, Treasury, Heatmap, Shop, Settings) and live Gold counter
 
 ### 📅 Task Scheduling
 - **Schedule upcoming tasks** with a name, domain, start date, and expected completion date
@@ -34,6 +34,15 @@ A **gamified life-analytics PWA** that turns your daily habits into XP, levels, 
 - **Hover tooltips** display the exact XP earned on each day
 - **Color legend** from less to more activity
 
+### 💰 Treasury
+- **Ledger** — log income (**bounties**) and expenses (**upkeep**) with a description, amount, category, and optional recurring flag
+- **Stat Affinity** — tag each expense with a character stat (💪 VIT, 📚 INT, 🎉 CHA, 🧠 WIS, or ✨ Neutral) to earn XP and attribute points from your spending
+- **Vault** — set monthly **budget shields** per category with progress bars and color-coded status (🟢 Safe → 🟡 Warning → 🔴 Critical → 💀 Depleted)
+- **Dashboard** — view net worth, monthly income vs. expenses, **Vault Gold** (cosmetic currency converted from net worth), **burn rate** (survival days remaining), and an expense breakdown by stat affinity
+- **Whale Bonus** 🐋 — above-average income triggers a special reward notification
+- **Treasury XP** — expenses with a non-neutral stat affinity earn XP (`amount × 0.1`, capped at 50 XP) and corresponding attribute growth
+- **Privacy Mode** — hides monetary amounts and shows only percentages
+
 ### 🛒 In-Game Shop
 - Purchase **Streak Freezes** (50 GOLD each) to protect your streak when you miss a day
 
@@ -45,7 +54,8 @@ A **gamified life-analytics PWA** that turns your daily habits into XP, levels, 
 - Toggle **sound effects** (Web Audio API sine-wave tones for click, XP gain, critical success, level up, purchase, streak saved, sad/fail)
 - Toggle **reduced motion** to disable animations
 - **Haptic feedback** via the Vibration API (short, success, and critical vibration patterns)
-- Full **data export/import** as version-tagged JSON (v2) for backup and restore, including scheduled tasks
+- Full **data export/import** as version-tagged JSON (v3) for backup and restore, including scheduled tasks, transactions, and budgets
+- **Treasury settings**: configurable currency symbol ($ € £ ¥ ₹ etc.), privacy mode, and Vault Gold exchange rate
 
 ### 🎊 Feedback & Celebrations
 - Post-submission **feedback modal** showing XP earned, base XP breakdown, stat gains, critical-hit notifications, level-up celebrations, and a suggested difficulty hint
@@ -83,6 +93,9 @@ A **gamified life-analytics PWA** that turns your daily habits into XP, levels, 
 - **Critical success count** — lifetime total of critical hits rolled
 - **Recent outcomes** — last 30 activity outcomes for adaptive difficulty
 - **Gold milestones** — next XP threshold for the periodic 10 GOLD reward
+- **Treasury transactions** — income (bounties) and expenses (upkeep) with categories and stat affinities
+- **Monthly budgets** — spending limits per category with real-time tracking
+- **Net worth & burn rate** — financial overview with survival-days calculation
 
 ---
 
@@ -164,6 +177,27 @@ This keeps tasks in the "Goldilocks zone" — challenging enough to be engaging 
 - Milestones are spaced at **random intervals between 300 and 400 XP**
 - The next milestone threshold is recalculated after each reward, keeping the timing unpredictable
 
+### Treasury XP & Stat Affinities
+
+Expenses logged in the Treasury can earn XP and boost character attributes based on their **Stat Affinity**:
+
+```
+Treasury XP = min(50, round(amount × 0.1))
+```
+
+- **Neutral** affinity (Luxury/Misc) earns **0 XP**
+- Non-neutral affinities earn XP and a corresponding attribute delta:
+
+| Stat Affinity | Example Categories | Attribute Boosted |
+|---------------|--------------------|--------------------|
+| 💪 **VIT** | Health, Gym, Food | VIT ↑ |
+| 📚 **INT** | Books, Courses | INT ↑ |
+| 🎉 **CHA** | Social, Gifts | CHA ↑ |
+| 🧠 **WIS** | Investments, Savings | WIS ↑ |
+| ✨ **Neutral** | Luxury, Misc | No XP |
+
+Attribute delta per treasury expense: `max(1, round(xpGained / 20))`
+
 ---
 
 ## 🏗️ Tech Stack
@@ -183,15 +217,17 @@ This keeps tasks in the "Goldilocks zone" — challenging enough to be engaging 
 
 ```
 src/
-├── components/    # React + Tailwind UI components
+├── components/
+│   ├── neo/              # Neobrutalist design system primitives (NeoButton, NeoCard, NeoInput, NeoProgressBar)
+│   └── ...               # React + Tailwind UI components (Dashboard, Treasury, Heatmap, etc.)
 ├── data/
-│   ├── db.ts              # IndexedDB schema (Dexie)
-│   └── repositories/      # Data access layer (CRUD operations, export/import, scheduling)
+│   ├── db.ts              # IndexedDB schema (Dexie) — v3: activities, gameMeta, scheduledTasks, treasury, budgets
+│   └── repositories/      # Data access layer (CRUD operations, export/import, scheduling, treasury)
 ├── lib/
-│   ├── rpg-math.ts        # Pure RPG game logic (XP, levels, attributes, Goldilocks)
+│   ├── rpg-math.ts        # Pure RPG game logic (XP, levels, attributes, Goldilocks, treasury XP)
 │   ├── soundEngine.ts     # Web Audio sound effects
 │   └── haptics.ts         # Vibration API helpers
-├── state/                 # Zustand stores (game state, UI state)
+├── state/                 # Zustand stores (game state, UI state, treasury state)
 └── types/index.ts         # TypeScript interfaces
 ```
 
